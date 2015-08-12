@@ -1,0 +1,5 @@
+We implement a cross-layer design utilizing a cyclic redundancy check (CRC) on the transport layer to detect poor channel state and Alamouti's space-time block code on the link layer for retransmission.
+Retransmissions are performed with cooperative diversity, utilizing inactive nodes in a virtual antenna array.
+Diversity nodes are selected at the transport layer, rather than the link layer, reducing the channel quality estimation to a CRC.
+We also simulate different methods of selecting retransmission nodes by taking into account likelihood of retransmission.
+We find that utilizing cooperative diversity significantly increases throughput, especially in shadow fading environments where all nodes do not have line of sight channels to all other nodes.

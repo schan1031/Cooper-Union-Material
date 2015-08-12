@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 3.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="NewFilterExample.com.freescale.managedbuild.target.dsp.asm.cld.1135866593" name="56K ASM COFF" projectType="com.freescale.managedbuild.target.dsp.asm.cld">
+<configuration artifactExtension="cld" artifactName="TwoBandStereoEQ" cleanCommand="rm -f" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.freescale.managedbuild.config.dsp.asm.cld.debug.363023875" name="Debug" parent="com.freescale.managedbuild.config.dsp.asm.cld.debug" prebuildStep="make clean">
+<toolChain id="com.freescale.managedbuild.toolchain.dsp.asm.cld.debug.594306152" name="56K ASM Tool Chain" superClass="com.freescale.managedbuild.toolchain.dsp.asm.cld.debug">
+<tool id="com.freescale.managedbuild.tool.dsp.asm.assembler.cld.debug.602286780" name="56K ASM Assembler" superClass="com.freescale.managedbuild.tool.dsp.asm.assembler.cld.debug"/>
+<tool id="com.freescale.managedbuild.tool.dsp.asm.linker.cld.debug.2108343765" name="56K ASM Linker" superClass="com.freescale.managedbuild.tool.dsp.asm.linker.cld.debug"/>
+<macros expandEnvironmentMacros="true"/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="cld" artifactName="NewFilterExample" cleanCommand="rm -f" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.freescale.managedbuild.config.dsp.asm.cld.release.892436894" name="Release" parent="com.freescale.managedbuild.config.dsp.asm.cld.release" prebuildStep="make clean">
+<toolChain id="com.freescale.managedbuild.toolchain.dsp.asm.cld.release.105124081" name="56K ASM Tool Chain" superClass="com.freescale.managedbuild.toolchain.dsp.asm.cld.release">
+<tool id="com.freescale.managedbuild.tool.dsp.asm.assembler.cld.release.39631294" name="56K ASM Assembler" superClass="com.freescale.managedbuild.tool.dsp.asm.assembler.cld.release"/>
+<tool id="com.freescale.managedbuild.tool.dsp.asm.linker.cld.release.1765115424" name="56K ASM Linker" superClass="com.freescale.managedbuild.tool.dsp.asm.linker.cld.release"/>
+</toolChain>
+</configuration>
+<macros/>
+</project>
+</ManagedProjectBuildInfo>

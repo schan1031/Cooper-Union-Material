@@ -1,0 +1,38 @@
+\tikzstyle{decision} = [diamond, draw, fill=none, 
+    text width=4.5em, text badly centered, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=none, 
+    text width=5em, text centered, rounded corners, minimum height=3em]
+\tikzstyle{line} = [draw, -latex']
+
+\begin{figure}
+	\begin{tikzpicture}[node distance = 2.5cm, auto, font=\scriptsize]
+	    \node [block] (direct) {Source node broadcasts data};
+	    \node [block, below of=direct, node distance=1.5cm] (crc) {All nodes within range check CRC};
+	    \node [decision, below of=crc] (destchk) {Destination node has correct CRC};
+	    \node [block, left of=destchk, node distance=3cm] (destack) {Destination node sends ACK};
+	    \path [line] (destack) |- (direct);
+	    \node [block, below of=destchk] (destnack) {Destination node sends NACK};
+	    \node [decision, below of=destnack] (otherschk) {Other nodes have correct CRC};
+	    \node [block, below of=otherschk] (candidate) {Choose a candidate and retransmit with Alamouti's code};
+	    \node [decision, below of=candidate] (destchk2) {Destination node has correct CRC};
+	    \node [block, right of=destchk2] (destnack2) {Destination node sends NACK};
+	    \node [block, right of=otherschk] (retx) {Source node must retransmit the packet};
+	   
+	   
+	    \path [line] (direct) -- (crc);
+	    \path [line] (crc) -- (destchk);
+	    \path [line] (destchk) -- node [near start] {Yes} (destack);
+		\path [line] (destchk) -- node [near start] {No} (destnack);
+		\path [line] (destnack) -- (otherschk);
+		\path [line] (otherschk) -- node [near start] {Yes} (candidate);
+		\path [line] (otherschk) -- node [near start] {No} (retx);
+		\path [line] (candidate) -- (destchk2);
+		\path [line] (destchk2) -| node [near start] {Yes} (destack);
+		\path [line] (destchk2) -- node [near start] {No} (destnack2);
+		\path [line] (destnack2) -- (retx);
+		\path [line] (retx) |- (direct);
+	\end{tikzpicture}
+	
+	\caption{Flowchart of the simulated algorithm.}
+	\label{fig:flowchart}
+\end{figure}

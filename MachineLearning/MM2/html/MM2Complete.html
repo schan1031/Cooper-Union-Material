@@ -1,0 +1,462 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>MM2Complete</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-06"><meta name="DC.source" content="MM2Complete.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Makeene Learning Mini Matlab 2</a></li><li><a href="#2">Bayesian Linear Regression</a></li><li><a href="#3">Part 2, Figure 3.8</a></li><li><a href="#4">Design Matrices</a></li><li><a href="#5">Computations</a></li><li><a href="#6">Plots</a></li></ul></div><h2>Makeene Learning Mini Matlab 2<a name="1"></a></h2><p>Kelvin Lin Spencer Chan Neema Aggarwal</p><pre class="codeinput">clc; close <span class="string">all</span>; clear <span class="string">all</span>;
+</pre><h2>Bayesian Linear Regression<a name="2"></a></h2><p>initialize variables</p><pre class="codeinput">[w0,w1] = meshgrid(linspace(-1,1,1000),linspace(-1,1,1000));
+w0p = reshape(w0,numel(w0),1);
+w1p = reshape(w1,numel(w1),1);
+a0 = -0.5;
+a1 = 0.3;
+alpha = 2;
+beta = 25;
+mu = [0 0];
+sigma = 1/alpha*eye(2);
+
+<span class="comment">% plot first iteration</span>
+pp = mvnpdf([w0p,w1p],mu,sigma);
+ppp = reshape(pp,sqrt(numel(pp)),sqrt(numel(pp)));
+guess = mvnrnd(mu,sigma,5);
+x = linspace(-1,1,1000);
+
+figure;
+subplot(4,3,1); axis <span class="string">off</span>;
+
+title(<span class="string">'Likelihood'</span>)
+
+subplot(4,3,2);
+
+surf(w0,w1,ppp,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>); view(2);hold <span class="string">on</span>;
+scatter3(a0,a1,100,<span class="string">'w+'</span>,<span class="string">'LineWidth'</span>,1); hold <span class="string">off</span>;
+title(<span class="string">'Prior/Posterior'</span>)
+
+subplot(4,3,3);
+
+<span class="keyword">for</span> line = 1:5;
+   plot(x,guess(line,1)+x.*guess(line,2),<span class="string">'LineWidth'</span>,1);hold <span class="string">on</span>;
+<span class="keyword">end</span>
+samples = -1 + randi([0 1000],1)/500;
+samplesy = a0 + samples.*a1 + randn(1)/(sqrt(beta));
+phi = [1,samplesy];
+hold <span class="string">off</span>;
+ylim([-1 1]);
+title(<span class="string">'Data Space'</span>)
+
+<span class="keyword">for</span> ii = 2:4
+    subplot(4,3,3*ii-1) <span class="comment">% plot posterior</span>
+
+    <span class="comment">% update posterior</span>
+    sigma = inv(alpha*eye(2)+beta*phi'*phi); <span class="comment">% eqn 3.54</span>
+    mu = beta*sigma*phi'*samplesy; <span class="comment">% eqn 3.53</span>
+    pp = mvnpdf([w0p,w1p],mu',sigma);
+    ppp = reshape(pp,sqrt(numel(pp)),sqrt(numel(pp)));
+
+    surf(w0,w1,ppp+0.01,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>); view(2); hold <span class="string">on</span>; <span class="comment">% plot posterior</span>
+    scatter3(a0,a1,100,<span class="string">'w+'</span>,<span class="string">'LineWidth'</span>,1); hold <span class="string">off</span>;
+
+    <span class="comment">% collect new observations</span>
+    samples = [samples;-1 + randi([0 1000],[5,1])/500];
+    samplesy = a0 + samples.*a1 + randn(size(samples))/(sqrt(beta));
+    phi = [ones(size(samples)),samples];
+
+    subplot(4,3,3*ii) <span class="comment">% plot observations and guesses</span>
+
+    guess = mvnrnd(mu,sigma,5);
+    <span class="keyword">for</span> line = 1:5;
+        plot(x,guess(line,1)+x.*guess(line,2),<span class="string">'LineWidth'</span>,1);hold <span class="string">on</span>;
+    <span class="keyword">end</span>
+    plot(samples,samplesy,<span class="string">'ro'</span>); hold <span class="string">off</span>;
+    ylim([-1 1]);
+
+    subplot(4,3,3*ii-2) <span class="comment">% plot likelihood</span>
+    X = [1;samples(end)];
+    lp = normpdf(samplesy(end),[w0p,w1p]*X,1/beta);
+    lp = reshape(lp,sqrt(numel(lp)),sqrt(numel(lp)));
+    surf(w0,w1,lp,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>); view(2);
+
+<span class="keyword">end</span>
+
+suptitle(<span class="string">'Bayesian Linear Regression'</span>);
+</pre><img vspace="5" hspace="5" src="MM2Complete_01.png" alt=""> <h2>Part 2, Figure 3.8<a name="3"></a></h2><pre class="codeinput">x = 0:.01:1;
+green = sin(2*pi*x);
+noise = .25*randn(1,length(green));
+data = green+noise;
+
+<span class="comment">% 1 Sample</span>
+n1 = randi([1 length(data)],1,1);
+<span class="comment">% 2 Samples</span>
+n2 = [n1 randi([1 length(data)],1,1)];
+<span class="comment">% 4 Samples</span>
+n3 = [n2 randi([1 length(data)],1,2)];
+<span class="comment">% 25 Samples</span>
+n4 = [n3 randi([1 length(data)],1,21)];
+</pre><h2>Design Matrices<a name="4"></a></h2><pre class="codeinput">mu = linspace(0,1,9);
+s = .1;
+phi1 = exp(-(x(n1)-mu).^2/(2*s^2));
+
+phi2 = zeros(length(n2),9);
+<span class="keyword">for</span> ii = 1:length(n2)
+    phi2(ii,:) = exp(-(x(n2(ii))-mu).^2/(2*s^2));
+<span class="keyword">end</span>
+
+phi3 = zeros(length(n3),9);
+<span class="keyword">for</span> ii = 1:length(n3)
+    phi3(ii,:) = exp(-(x(n3(ii))-mu).^2/(2*s^2));
+<span class="keyword">end</span>
+
+phi4 = zeros(length(n4),9);
+<span class="keyword">for</span> ii = 1:length(n4)
+    phi4(ii,:) = exp(-(x(n4(ii))-mu).^2/(2*s^2));
+<span class="keyword">end</span>
+</pre><h2>Computations<a name="5"></a></h2><pre class="codeinput">beta = 25;
+alpha = 2;
+
+sn1 = (alpha*eye(9) + beta*(phi1'*phi1))^-1;
+sn2 = (alpha*eye(9) + beta*(phi2'*phi2))^-1;
+sn3 = (alpha*eye(9) + beta*(phi3'*phi3))^-1;
+sn4 = (alpha*eye(9) + beta*(phi4'*phi4))^-1;
+
+mn1 = beta*sn1*phi1'*data(n1)';
+mn2 = beta*sn2*phi2'*data(n2)';
+mn3 = beta*sn3*phi3'*data(n3)';
+mn4 = beta*sn4*phi4'*data(n4)';
+
+
+sphi = zeros(9,1);
+<span class="keyword">for</span> ii = 1:length(x)
+    sphi = exp(-(x(ii)-mu').^2./(2*s^2));
+    mean1(ii) = mn1'*sphi;
+    mean2(ii) = mn2'*sphi;
+    mean3(ii) = mn3'*sphi;
+    mean4(ii) = mn4'*sphi;
+
+    var1(ii) = 1/beta + sphi'*sn1*sphi;
+    var2(ii) = 1/beta + sphi'*sn2*sphi;
+    var3(ii) = 1/beta + sphi'*sn3*sphi;
+    var4(ii) = 1/beta + sphi'*sn4*sphi;
+<span class="keyword">end</span>
+</pre><h2>Plots<a name="6"></a></h2><p>1 Sample</p><pre class="codeinput">figure
+subplot(2,2,1);
+axis([0,1,-1.5,1.5])
+hold <span class="string">on</span>;
+a = mean1 + sqrt(var1);
+b = mean1 - sqrt(var1);
+h = fill([x fliplr(x)], [a fliplr(b)], <span class="string">'r'</span>);
+set(h,<span class="string">'facealpha'</span>,0.3)
+plot(x,green,<span class="string">'g'</span>)
+plot(x(n1),data(n1),<span class="string">'o'</span>)
+plot(x,mean1)
+title(<span class="string">'One Observation'</span>)
+
+
+<span class="comment">% 2 Samples</span>
+subplot(2,2,2);
+axis([0,1,-1.5,1.5])
+hold <span class="string">on</span>;
+a = mean2 + sqrt(var2);
+b = mean2 - sqrt(var2);
+h = fill([x fliplr(x)], [a fliplr(b)], <span class="string">'r'</span>);
+set(h,<span class="string">'facealpha'</span>,0.3)
+plot(x,green,<span class="string">'g'</span>)
+plot(x(n2),data(n2),<span class="string">'o'</span>)
+plot(x,mean2)
+title(<span class="string">'Two Observations'</span>)
+
+
+<span class="comment">% 4 Samples</span>
+subplot(2,2,3);
+axis([0,1,-1.5,1.5])
+hold <span class="string">on</span>;
+a = mean3 + sqrt(var3);
+b = mean3 - sqrt(var3);
+h = fill([x fliplr(x)], [a fliplr(b)], <span class="string">'r'</span>);
+set(h,<span class="string">'facealpha'</span>,0.3)
+plot(x,green,<span class="string">'g'</span>)
+plot(x(n3),data(n3),<span class="string">'o'</span>)
+plot(x,mean3)
+title(<span class="string">'Four Observations'</span>)
+
+<span class="comment">% 25 Samples</span>
+subplot(2,2,4);
+axis([0,1,-1.5,1.5])
+hold <span class="string">on</span>;
+a = mean4 + sqrt(var4);
+b = mean4 - sqrt(var4);
+h = fill([x fliplr(x)], [a fliplr(b)], <span class="string">'r'</span>);
+set(h,<span class="string">'facealpha'</span>,0.3)
+plot(x,green,<span class="string">'g'</span>)
+plot(x(n4),data(n4),<span class="string">'o'</span>)
+plot(x,mean4)
+title(<span class="string">'Twenty Five Observations'</span>)
+suptitle(<span class="string">'Predictive Distribution Over Multiple Observations'</span>)
+</pre><img vspace="5" hspace="5" src="MM2Complete_02.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Makeene Learning Mini Matlab 2
+% Kelvin Lin Spencer Chan Neema Aggarwal
+clc; close all; clear all;
+
+%% Bayesian Linear Regression
+% initialize variables
+[w0,w1] = meshgrid(linspace(-1,1,1000),linspace(-1,1,1000));
+w0p = reshape(w0,numel(w0),1);
+w1p = reshape(w1,numel(w1),1);
+a0 = -0.5;
+a1 = 0.3;
+alpha = 2;
+beta = 25;
+mu = [0 0];
+sigma = 1/alpha*eye(2);
+
+% plot first iteration
+pp = mvnpdf([w0p,w1p],mu,sigma);
+ppp = reshape(pp,sqrt(numel(pp)),sqrt(numel(pp)));
+guess = mvnrnd(mu,sigma,5);
+x = linspace(-1,1,1000);
+
+figure; 
+subplot(4,3,1); axis off;
+
+title('Likelihood')
+
+subplot(4,3,2);
+
+surf(w0,w1,ppp,'EdgeColor','none'); view(2);hold on;
+scatter3(a0,a1,100,'w+','LineWidth',1); hold off;
+title('Prior/Posterior')
+
+subplot(4,3,3);
+
+for line = 1:5;
+   plot(x,guess(line,1)+x.*guess(line,2),'LineWidth',1);hold on;
+end
+samples = -1 + randi([0 1000],1)/500;
+samplesy = a0 + samples.*a1 + randn(1)/(sqrt(beta));
+phi = [1,samplesy];
+hold off;
+ylim([-1 1]);
+title('Data Space')
+
+for ii = 2:4
+    subplot(4,3,3*ii-1) % plot posterior
+    
+    % update posterior
+    sigma = inv(alpha*eye(2)+beta*phi'*phi); % eqn 3.54
+    mu = beta*sigma*phi'*samplesy; % eqn 3.53
+    pp = mvnpdf([w0p,w1p],mu',sigma);
+    ppp = reshape(pp,sqrt(numel(pp)),sqrt(numel(pp)));
+    
+    surf(w0,w1,ppp+0.01,'EdgeColor','none'); view(2); hold on; % plot posterior
+    scatter3(a0,a1,100,'w+','LineWidth',1); hold off;
+    
+    % collect new observations
+    samples = [samples;-1 + randi([0 1000],[5,1])/500];
+    samplesy = a0 + samples.*a1 + randn(size(samples))/(sqrt(beta));
+    phi = [ones(size(samples)),samples];
+    
+    subplot(4,3,3*ii) % plot observations and guesses
+    
+    guess = mvnrnd(mu,sigma,5);
+    for line = 1:5;
+        plot(x,guess(line,1)+x.*guess(line,2),'LineWidth',1);hold on;
+    end
+    plot(samples,samplesy,'ro'); hold off;
+    ylim([-1 1]);
+    
+    subplot(4,3,3*ii-2) % plot likelihood
+    X = [1;samples(end)];
+    lp = normpdf(samplesy(end),[w0p,w1p]*X,1/beta);
+    lp = reshape(lp,sqrt(numel(lp)),sqrt(numel(lp)));
+    surf(w0,w1,lp,'EdgeColor','none'); view(2);
+    
+end
+
+suptitle('Bayesian Linear Regression');
+
+%% Part 2, Figure 3.8
+
+x = 0:.01:1;
+green = sin(2*pi*x);
+noise = .25*randn(1,length(green));
+data = green+noise;
+
+% 1 Sample
+n1 = randi([1 length(data)],1,1);
+% 2 Samples
+n2 = [n1 randi([1 length(data)],1,1)];
+% 4 Samples
+n3 = [n2 randi([1 length(data)],1,2)];
+% 25 Samples
+n4 = [n3 randi([1 length(data)],1,21)];
+
+%% Design Matrices
+
+mu = linspace(0,1,9);
+s = .1;
+phi1 = exp(-(x(n1)-mu).^2/(2*s^2));
+
+phi2 = zeros(length(n2),9);
+for ii = 1:length(n2)
+    phi2(ii,:) = exp(-(x(n2(ii))-mu).^2/(2*s^2));
+end
+
+phi3 = zeros(length(n3),9);
+for ii = 1:length(n3)
+    phi3(ii,:) = exp(-(x(n3(ii))-mu).^2/(2*s^2));
+end
+
+phi4 = zeros(length(n4),9);
+for ii = 1:length(n4)
+    phi4(ii,:) = exp(-(x(n4(ii))-mu).^2/(2*s^2));
+end
+
+%% Computations
+beta = 25;
+alpha = 2;
+
+sn1 = (alpha*eye(9) + beta*(phi1'*phi1))^-1;
+sn2 = (alpha*eye(9) + beta*(phi2'*phi2))^-1;
+sn3 = (alpha*eye(9) + beta*(phi3'*phi3))^-1;
+sn4 = (alpha*eye(9) + beta*(phi4'*phi4))^-1;
+
+mn1 = beta*sn1*phi1'*data(n1)';
+mn2 = beta*sn2*phi2'*data(n2)';
+mn3 = beta*sn3*phi3'*data(n3)';
+mn4 = beta*sn4*phi4'*data(n4)';
+
+
+sphi = zeros(9,1);
+for ii = 1:length(x)
+    sphi = exp(-(x(ii)-mu').^2./(2*s^2));
+    mean1(ii) = mn1'*sphi;
+    mean2(ii) = mn2'*sphi;
+    mean3(ii) = mn3'*sphi;
+    mean4(ii) = mn4'*sphi;
+    
+    var1(ii) = 1/beta + sphi'*sn1*sphi;
+    var2(ii) = 1/beta + sphi'*sn2*sphi;
+    var3(ii) = 1/beta + sphi'*sn3*sphi;
+    var4(ii) = 1/beta + sphi'*sn4*sphi;
+end
+
+%% Plots
+% 1 Sample
+figure
+subplot(2,2,1);
+axis([0,1,-1.5,1.5])
+hold on;
+a = mean1 + sqrt(var1);
+b = mean1 - sqrt(var1);
+h = fill([x fliplr(x)], [a fliplr(b)], 'r');
+set(h,'facealpha',0.3)
+plot(x,green,'g')
+plot(x(n1),data(n1),'o')
+plot(x,mean1)
+title('One Observation')
+
+
+% 2 Samples 
+subplot(2,2,2);
+axis([0,1,-1.5,1.5])
+hold on;
+a = mean2 + sqrt(var2);
+b = mean2 - sqrt(var2);
+h = fill([x fliplr(x)], [a fliplr(b)], 'r');
+set(h,'facealpha',0.3)
+plot(x,green,'g')
+plot(x(n2),data(n2),'o')
+plot(x,mean2)
+title('Two Observations')
+
+
+% 4 Samples
+subplot(2,2,3);
+axis([0,1,-1.5,1.5])
+hold on;
+a = mean3 + sqrt(var3);
+b = mean3 - sqrt(var3);
+h = fill([x fliplr(x)], [a fliplr(b)], 'r');
+set(h,'facealpha',0.3)
+plot(x,green,'g')
+plot(x(n3),data(n3),'o')
+plot(x,mean3)
+title('Four Observations')
+
+% 25 Samples
+subplot(2,2,4);
+axis([0,1,-1.5,1.5])
+hold on;
+a = mean4 + sqrt(var4);
+b = mean4 - sqrt(var4);
+h = fill([x fliplr(x)], [a fliplr(b)], 'r');
+set(h,'facealpha',0.3)
+plot(x,green,'g')
+plot(x(n4),data(n4),'o')
+plot(x,mean4)
+title('Twenty Five Observations')
+suptitle('Predictive Distribution Over Multiple Observations')
+##### SOURCE END #####
+--></body></html>

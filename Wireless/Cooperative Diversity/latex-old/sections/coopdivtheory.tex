@@ -1,0 +1,27 @@
+A cooperative diversity algorithm was described in \cite{4686273} and was used as a basis for the simulation.
+
+\subsection{Diversity Strategy}
+If we consider an ad-hoc network consisting of many separate devices, it can be assumed that some of these nodes will be idle and available for data transmission.
+These inactive nodes can be utilized for transmission with an orthogonal space-time block code.
+To limit unnecessary use of other nodes, the transmission only falls back to cooperative diversity if the destination node fails the CRC from the source-only transmission. A simple implementation of this process can be seen in Figure  \ref{fig:flowchart}.
+
+\input{figures/flowchart}
+
+\subsection{Distance and Shadow Fading Considerations}
+Simply picking a diversity node at random from the list of nodes that passed the CRC is not the most efficient method.
+Consider the network topology shown in Figure \ref{fig:4x4topology}.
+Assume that the circle around node 10 is a building introducing significant shadowing to the channels passing through it.
+Consider that node 1 is attempting to transmit data to node 11.
+While nodes 2 and 5 will pass the CRC equally often,  a cooperative diversity transmission with node 2 is much more likely to be successful than one with node 5.
+The same is true for nodes 3 and 9.
+Figure \ref{fig:histogram} contains the results of 1000 packet transmissions where the diversity nodes where chosen from a uniform random distribution.
+While nodes 2 and 5 were selected for diversity about the same number of times, node 5 was obviously not a good choice for cooperative diversity.
+To account for this, Algorithm \ref{alg1} was developed.
+When the node enters the network, it assumes that all nodes have an equal probability of performing a successful transmission as a diversity node.
+As transmissions are made, the node keeps track of the probability of transmission and selects the diversity nodes based on which of the diversity candidate nodes has the highest probability of transmission.
+
+\input{figures/4x4topology}
+\input{figures/histogram}
+
+
+\input{sections/likelihoodalg}

@@ -1,0 +1,38 @@
+\begin{algorithm}
+\caption{Algorithm for selecting diversity nodes by transmission likelihood}          
+\label{alg1}
+Let $N$ be the set of all other nodes in the ad-hoc network.\\
+Let $Q$ be the subset of $N$ that passed the CRC.\\
+Let $Q'$ be the subset of $Q$ that has the highest probability of success as a diversity node.\\
+Let $P_{ij}$ be the likelihood of transmission to node $j$ if node $i$ is selected as the diversity node.
+\begin{algorithmic}                    % enter the algorithmic environment
+	\FORALL{$i,j \in N$}
+		\STATE Initially assume all nodes have perfect transmission likelihood.
+		\STATE $P_{ij} \leftarrow 1$
+		\STATE $n_{ij} \leftarrow 1$
+	\ENDFOR
+    \LOOP
+    	\STATE Transmit without diversity from $i$ to $j$.
+    	\IF{\{$j$ passes CRC\}}
+    		\STATE Send next packet.
+    	\ELSE
+    		\STATE Let $Q = \{ a \mid \forall a \in N, a $ passes CRC$\}$
+			\STATE Let $Q' = \{ b \mid \forall b,c \in Q, P_{bj} \geq P_{cj}\}$
+			\IF{$|Q'| > 1$}
+				\STATE $m \sim U(1, |Q'|)$
+				\STATE $k \leftarrow Q'_m$
+			\ELSE
+				\STATE $k \leftarrow Q'_1$
+			\ENDIF
+			\STATE Retransmit from $i$ to $j$ with $k$ selected as diversity node.
+			\IF{\{$j$ passes CRC\}}
+				\STATE $P_{kj} \leftarrow \frac{P_{kj} n_{kj} + 1}{n_{kj} + 1}$
+    			\STATE Send next packet.
+    		\ELSE
+    			\STATE $P_{kj} \leftarrow \frac{P_{kj} n_{kj}}{n_{kj} + 1}$
+    			\STATE Requeue packet for retransmission without diversity.
+    		\ENDIF
+    	\ENDIF
+	\ENDLOOP
+\end{algorithmic}
+\end{algorithm}

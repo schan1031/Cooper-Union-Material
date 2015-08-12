@@ -1,0 +1,3256 @@
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 1
+
+
+
+1                                    page    132,60
+2                                    include "Ioequ.inc"
+3                          ;*********************************************************************************
+4      
+5                          ;
+6      
+7                          ;     EQUATES for DSP56362 I/O registers and ports
+8      
+9                          ;     Reference: DSP56362 Specifications Revision 0.2
+10     
+11                         ;
+12     
+13                         ;     Last update: November 6, 1997
+14     
+15                         ;
+16     
+17                         ;*********************************************************************************
+18     
+19     
+20     
+21                                   page    132,55,0,0,0
+22     
+23                                   opt     mex
+24     
+25     
+26     
+27                         ioequ     ident   1,0
+28     
+29     
+30     
+31                         ;------------------------------------------------------------------------
+32     
+33                         ;
+34     
+35                         ;       EQUATES for I/O Port Programming
+36     
+37                         ;
+38     
+39                         ;------------------------------------------------------------------------
+40     
+41     
+42     
+43                         ;       Register Addresses
+44     
+45     
+46     
+47        FFFFC9           M_HDR     EQU     $FFFFC9                           ; Host port GPIO data Register
+48     
+49        FFFFC8           M_HDDR    EQU     $FFFFC8                           ; Host port GPIO direction Register
+50     
+51        FFFFBF           M_PCRC    EQU     $FFFFBF                           ; Port C Control Register
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 2
+
+
+
+52     
+53        FFFFBE           M_PRRC    EQU     $FFFFBE                           ; Port C Direction Register
+54     
+55        FFFFBD           M_PDRC    EQU     $FFFFBD                           ; Port C GPIO Data Register
+56     
+57        FFFFD7           M_PCRD    EQU     $FFFFD7                           ; Port D Control register
+58     
+59        FFFFD6           M_PRRD    EQU     $FFFFD6                           ; Port D Direction Data Register
+60     
+61        FFFFD5           M_PDRD    EQU     $FFFFD5                           ; Port D GPIO Data Register
+62     
+63        FFFFFC           M_OGDB    EQU     $FFFFFC                           ; OnCE GDB Register
+64     
+65     
+66     
+67     
+68     
+69     
+70     
+71                         ;------------------------------------------------------------------------
+72     
+73                         ;
+74     
+75                         ;       EQUATES for Exception Processing
+76     
+77                         ;
+78     
+79                         ;------------------------------------------------------------------------
+80     
+81     
+82     
+83                         ;       Register Addresses
+84     
+85     
+86     
+87        FFFFFF           M_IPRC    EQU     $FFFFFF                           ; Interrupt Priority Register Core
+88     
+89        FFFFFE           M_IPRP    EQU     $FFFFFE                           ; Interrupt Priority Register Peripheral
+90     
+91     
+92     
+93                         ;       Interrupt Priority Register Core (IPRC)
+94     
+95     
+96     
+97        000007           M_IAL     EQU     $7                                ; IRQA Mode Mask
+98     
+99        000000           M_IAL0    EQU     0                                 ; IRQA Mode Interrupt Priority Level (low)
+100    
+101       000001           M_IAL1    EQU     1                                 ; IRQA Mode Interrupt Priority Level (high)
+102    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 3
+
+
+
+103       000002           M_IAL2    EQU     2                                 ; IRQA Mode Trigger Mode
+104    
+105       000038           M_IBL     EQU     $38                               ; IRQB Mode Mask
+106    
+107       000003           M_IBL0    EQU     3                                 ; IRQB Mode Interrupt Priority Level (low)
+108    
+109       000004           M_IBL1    EQU     4                                 ; IRQB Mode Interrupt Priority Level (high)
+110    
+111       000005           M_IBL2    EQU     5                                 ; IRQB Mode Trigger Mode
+112    
+113       0001C0           M_ICL     EQU     $1C0                              ; IRQC Mode Mask
+114    
+115       000006           M_ICL0    EQU     6                                 ; IRQC Mode Interrupt Priority Level (low)
+116    
+117       000007           M_ICL1    EQU     7                                 ; IRQC Mode Interrupt Priority Level (high)
+118    
+119       000008           M_ICL2    EQU     8                                 ; IRQC Mode Trigger Mode
+120    
+121       000E00           M_IDL     EQU     $E00                              ; IRQD Mode Mask
+122    
+123       000009           M_IDL0    EQU     9                                 ; IRQD Mode Interrupt Priority Level (low)
+124    
+125       00000A           M_IDL1    EQU     10                                ; IRQD Mode Interrupt Priority Level (high)
+126    
+127       00000B           M_IDL2    EQU     11                                ; IRQD Mode Trigger Mode
+128    
+129       003000           M_D0L     EQU     $3000                             ; DMA0 Interrupt priority Level Mask
+130    
+131       00000C           M_D0L0    EQU     12                                ; DMA0 Interrupt Priority Level (low)
+132    
+133       00000D           M_D0L1    EQU     13                                ; DMA0 Interrupt Priority Level (high)
+134    
+135       00C000           M_D1L     EQU     $C000                             ; DMA1 Interrupt Priority Level Mask
+136    
+137       00000E           M_D1L0    EQU     14                                ; DMA1 Interrupt Priority Level (low)
+138    
+139       00000F           M_D1L1    EQU     15                                ; DMA1 Interrupt Priority Level (high)
+140    
+141       030000           M_D2L     EQU     $30000                            ; DMA2 Interrupt priority Level Mask
+142    
+143       000010           M_D2L0    EQU     16                                ; DMA2 Interrupt Priority Level (low)
+144    
+145       000011           M_D2L1    EQU     17                                ; DMA2 Interrupt Priority Level (high)
+146    
+147       0C0000           M_D3L     EQU     $C0000                            ; DMA3 Interrupt Priority Level Mask
+148    
+149       000012           M_D3L0    EQU     18                                ; DMA3 Interrupt Priority Level (low)
+150    
+151       000013           M_D3L1    EQU     19                                ; DMA3 Interrupt Priority Level (high)
+152    
+153       300000           M_D4L     EQU     $300000                           ; DMA4 Interrupt priority Level Mask
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 4
+
+
+
+154    
+155       000014           M_D4L0    EQU     20                                ; DMA4 Interrupt Priority Level (low)
+156    
+157       000015           M_D4L1    EQU     21                                ; DMA4 Interrupt Priority Level (high)
+158    
+159       C00000           M_D5L     EQU     $C00000                           ; DMA5 Interrupt priority Level Mask
+160    
+161       000016           M_D5L0    EQU     22                                ; DMA5 Interrupt Priority Level (low)
+162    
+163       000017           M_D5L1    EQU     23                                ; DMA5 Interrupt Priority Level (high)
+164    
+165    
+166    
+167                        ;       Interrupt Priority Register Peripheral (IPRP)
+168    
+169    
+170    
+171       000003           M_ESL     EQU     $3                                ; ESAI Interrupt Priority Level Mask
+172    
+173       000000           M_ESL0    EQU     0                                 ; ESAI Interrupt Priority Level (low)
+174    
+175       000001           M_ESL1    EQU     1                                 ; ESAI Interrupt Priority Level (high)
+176    
+177       00000C           M_SHL     EQU     $C                                ; SHI Interrupt Priority Level Mask
+178    
+179       000002           M_SHL0    EQU     2                                 ; SHI Interrupt Priority Level (low)
+180    
+181       000003           M_SHL1    EQU     3                                 ; SHI Interrupt Priority Level (high)
+182    
+183       000030           M_HDL     EQU     $30                               ; HDI08 Interrupt Priority Level Mask
+184    
+185       000004           M_HDL0    EQU     4                                 ; HDI08 Interrupt Priority Level (low)
+186    
+187       000005           M_HDL1    EQU     5                                 ; HDI08 Interrupt Priority Level (high)
+188    
+189       0000C0           M_DAL     EQU     $C0                               ; DAX Interrupt Priority Level  Mask
+190    
+191       000006           M_DAL0    EQU     6                                 ; DAX Interrupt Priority Level  (low)
+192    
+193       000007           M_DAL1    EQU     7                                 ; DAX Interrupt Priority Level  (high)
+194    
+195       000300           M_TAL     EQU     $300                              ; Timer Interrupt Priority Level Mask
+196    
+197       000008           M_TAL0    EQU     8                                 ; Timer Interrupt Priority Level (low)
+198    
+199       000009           M_TAL1    EQU     9                                 ; Timer Interrupt Priority Level (high)
+200    
+201    
+202    
+203                        ;------------------------------------------------------------------------
+204    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 5
+
+
+
+205                        ;
+206    
+207                        ;       EQUATES for Direct Memory Access (DMA)
+208    
+209    
+210                        ;
+211    
+212                        ;------------------------------------------------------------------------
+213    
+214    
+215    
+216                        ;       Register Addresses Of DMA
+217    
+218    
+219    
+220       FFFFF4           M_DSTR    EQU     $FFFFF4                           ; DMA Status Register
+221    
+222       FFFFF3           M_DOR0    EQU     $FFFFF3                           ; DMA Offset Register 0
+223    
+224       FFFFF2           M_DOR1    EQU     $FFFFF2                           ; DMA Offset Register 1
+225    
+226       FFFFF1           M_DOR2    EQU     $FFFFF1                           ; DMA Offset Register 2
+227    
+228       FFFFF0           M_DOR3    EQU     $FFFFF0                           ; DMA Offset Register 3
+229    
+230    
+231    
+232                        ;       Register Addresses Of DMA0
+233    
+234    
+235    
+236       FFFFEF           M_DSR0    EQU     $FFFFEF                           ; DMA0 Source Address Register
+237    
+238       FFFFEE           M_DDR0    EQU     $FFFFEE                           ; DMA0 Destination Address Register
+239    
+240       FFFFED           M_DCO0    EQU     $FFFFED                           ; DMA0 Counter
+241    
+242       FFFFEC           M_DCR0    EQU     $FFFFEC                           ; DMA0 Control Register
+243    
+244    
+245    
+246                        ;       Register Addresses Of DMA1
+247    
+248    
+249    
+250       FFFFEB           M_DSR1    EQU     $FFFFEB                           ; DMA1 Source Address Register
+251    
+252       FFFFEA           M_DDR1    EQU     $FFFFEA                           ; DMA1 Destination Address Register
+253    
+254       FFFFE9           M_DCO1    EQU     $FFFFE9                           ; DMA1 Counter
+255    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 6
+
+
+
+256       FFFFE8           M_DCR1    EQU     $FFFFE8                           ; DMA1 Control Register
+257    
+258    
+259    
+260                        ;       Register Addresses Of DMA2
+261    
+262    
+263    
+264       FFFFE7           M_DSR2    EQU     $FFFFE7                           ; DMA2 Source Address Register
+265    
+266       FFFFE6           M_DDR2    EQU     $FFFFE6                           ; DMA2 Destination Address Register
+267    
+268       FFFFE5           M_DCO2    EQU     $FFFFE5                           ; DMA2 Counter
+269    
+270       FFFFE4           M_DCR2    EQU     $FFFFE4                           ; DMA2 Control Register
+271    
+272    
+273    
+274                        ;       Register Addresses Of DMA3
+275    
+276    
+277    
+278       FFFFE3           M_DSR3    EQU     $FFFFE3                           ; DMA3 Source Address Register
+279    
+280       FFFFE2           M_DDR3    EQU     $FFFFE2                           ; DMA3 Destination Address Register
+281    
+282       FFFFE1           M_DCO3    EQU     $FFFFE1                           ; DMA3 Counter
+283    
+284       FFFFE0           M_DCR3    EQU     $FFFFE0                           ; DMA3 Control Register
+285    
+286    
+287    
+288                        ;       Register Addresses Of DMA4
+289    
+290    
+291    
+292       FFFFDF           M_DSR4    EQU     $FFFFDF                           ; DMA4 Source Address Register
+293    
+294       FFFFDE           M_DDR4    EQU     $FFFFDE                           ; DMA4 Destination Address Register
+295    
+296       FFFFDD           M_DCO4    EQU     $FFFFDD                           ; DMA4 Counter
+297    
+298       FFFFDC           M_DCR4    EQU     $FFFFDC                           ; DMA4 Control Register
+299    
+300    
+301    
+302                        ;       Register Addresses Of DMA5
+303    
+304    
+305    
+306       FFFFDB           M_DSR5    EQU     $FFFFDB                           ; DMA5 Source Address Register
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 7
+
+
+
+307    
+308       FFFFDA           M_DDR5    EQU     $FFFFDA                           ; DMA5 Destination Address Register
+309    
+310       FFFFD9           M_DCO5    EQU     $FFFFD9                           ; DMA5 Counter
+311    
+312       FFFFD8           M_DCR5    EQU     $FFFFD8                           ; DMA5 Control Register
+313    
+314    
+315    
+316                        ;       DMA Control Register
+317    
+318    
+319    
+320       000003           M_DSS     EQU     $3                                ; DMA Source Space Mask (DSS0-Dss1)
+321    
+322       000000           M_DSS0    EQU     0                                 ; DMA Source Memory space 0
+323    
+324       000001           M_DSS1    EQU     1                                 ; DMA Source Memory space 1
+325    
+326       00000C           M_DDS     EQU     $C                                ; DMA Destination Space Mask (DDS-DDS1)
+327    
+328       000002           M_DDS0    EQU     2                                 ; DMA Destination Memory Space 0
+329    
+330       000003           M_DDS1    EQU     3                                 ; DMA Destination Memory Space 1
+331    
+332       0003F0           M_DAM     EQU     $3f0                              ; DMA Address Mode Mask (DAM5-DAM0)
+333    
+334       000004           M_DAM0    EQU     4                                 ; DMA Address Mode 0
+335    
+336       000005           M_DAM1    EQU     5                                 ; DMA Address Mode 1
+337    
+338       000006           M_DAM2    EQU     6                                 ; DMA Address Mode 2
+339    
+340       000007           M_DAM3    EQU     7                                 ; DMA Address Mode 3
+341    
+342       000008           M_DAM4    EQU     8                                 ; DMA Address Mode 4
+343    
+344       000009           M_DAM5    EQU     9                                 ; DMA Address Mode 5
+345    
+346       00000A           M_D3D     EQU     10                                ; DMA Three Dimensional Mode
+347    
+348       00F800           M_DRS     EQU     $F800                             ; DMA Request Source Mask (DRS0-DRS4)
+349    
+350       00000B           M_DRS0    EQU     11                                ; DMA Request Source bit 0
+351    
+352       00000C           M_DRS1    EQU     12                                ; DMA Request Source bit 1
+353    
+354       00000D           M_DRS2    EQU     13                                ; DMA Request Source bit 2
+355    
+356       00000E           M_DRS3    EQU     14                                ; DMA Request Source bit 3
+357    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 8
+
+
+
+358       00000F           M_DRS4    EQU     15                                ; DMA Request Source bit 4
+359    
+360       000010           M_DCON    EQU     16                                ; DMA Continuous Mode
+361    
+362       060000           M_DPR     EQU     $60000                            ; DMA Channel Priority
+363    
+364       000011           M_DPR0    EQU     17                                ; DMA Channel Priority Level (low)
+365    
+366       000012           M_DPR1    EQU     18                                ; DMA Channel Priority Level (high)
+367    
+368       380000           M_DTM     EQU     $380000                           ; DMA Transfer Mode Mask (DTM2-DTM0)
+369    
+370       000013           M_DTM0    EQU     19                                ; DMA Transfer Mode 0
+371    
+372       000014           M_DTM1    EQU     20                                ; DMA Transfer Mode 1
+373    
+374       000015           M_DTM2    EQU     21                                ; DMA Transfer Mode 2
+375    
+376       000016           M_DIE     EQU     22                                ; DMA Interrupt Enable bit
+377    
+378       000017           M_DE      EQU     23                                ; DMA Channel Enable bit
+379    
+380    
+381    
+382                        ;       DMA Status Register
+383    
+384    
+385    
+386       00003F           M_DTD     EQU     $3F                               ; Channel Transfer Done Status MASK (DTD0-DTD5)
+387    
+388       000000           M_DTD0    EQU     0                                 ; DMA Channel Transfer Done Status 0
+389    
+390       000001           M_DTD1    EQU     1                                 ; DMA Channel Transfer Done Status 1
+391    
+392       000002           M_DTD2    EQU     2                                 ; DMA Channel Transfer Done Status 2
+393    
+394       000003           M_DTD3    EQU     3                                 ; DMA Channel Transfer Done Status 3
+395    
+396       000004           M_DTD4    EQU     4                                 ; DMA Channel Transfer Done Status 4
+397    
+398       000005           M_DTD5    EQU     5                                 ; DMA Channel Transfer Done Status 5
+399    
+400       000008           M_DACT    EQU     8                                 ; DMA Active State
+401    
+402       000E00           M_DCH     EQU     $E00                              ; DMA Active Channel Mask (DCH0-DCH2)
+403    
+404       000009           M_DCH0    EQU     9                                 ; DMA Active Channel 0
+405    
+406       00000A           M_DCH1    EQU     10                                ; DMA Active Channel 1
+407    
+408       00000B           M_DCH2    EQU     11                                ; DMA Active Channel 2
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 9
+
+
+
+409    
+410    
+411    
+412                        ;------------------------------------------------------------------------
+413    
+414                        ;
+415    
+416                        ;       EQUATES for Phase Locked Loop (PLL)
+417    
+418                        ;
+419    
+420                        ;------------------------------------------------------------------------
+421    
+422    
+423    
+424                        ;       Register Addresses Of PLL
+425    
+426    
+427    
+428       FFFFFD           M_PCTL    EQU     $FFFFFD                           ; PLL Control Register
+429    
+430    
+431    
+432                        ;       PLL Control Register
+433    
+434    
+435    
+436       000FFF           M_MF      EQU     $FFF                              ; Multiplication Factor Bits Mask (MF0-MF11)
+437    
+438       000000           M_MF0     EQU     0                                 ; Multiplication Factor bit 0
+439    
+440       000001           M_MF1     EQU     1                                 ; Multiplication Factor bit 1
+441    
+442       000002           M_MF2     EQU     2                                 ; Multiplication Factor bit 2
+443    
+444       000003           M_MF3     EQU     3                                 ; Multiplication Factor bit 3
+445    
+446       000004           M_MF4     EQU     4                                 ; Multiplication Factor bit 4
+447    
+448       000005           M_MF5     EQU     5                                 ; Multiplication Factor bit 5
+449    
+450       000006           M_MF6     EQU     6                                 ; Multiplication Factor bit 6
+451    
+452       000007           M_MF7     EQU     7                                 ; Multiplication Factor bit 7
+453    
+454       000008           M_MF8     EQU     8                                 ; Multiplication Factor bit 8
+455    
+456       000009           M_MF9     EQU     9                                 ; Multiplication Factor bit 9
+457    
+458       00000A           M_MF10    EQU     10                                ; Multiplication Factor bit 10
+459    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 10
+
+
+
+460       00000B           M_MF11    EQU     11                                ; Multiplication Factor bit 11
+461    
+462       007000           M_DF      EQU     $7000                             ; Division Factor Bits Mask (DF0-DF2)
+463    
+464       00000C           M_DF0     EQU     12                                ; Division Factor bit 0
+465    
+466       00000D           M_DF1     EQU     13                                ; Division Factor bit 1
+467    
+468       00000E           M_DF2     EQU     14                                ; Division Factor bit 2
+469    
+470       00000F           M_XTLR    EQU     15                                ; XTAL Range select bit
+471    
+472       000010           M_XTLD    EQU     16                                ; XTAL Disable Bit
+473    
+474       000011           M_PSTP    EQU     17                                ; STOP Processing State Bit
+475    
+476       000012           M_PEN     EQU     18                                ; PLL Enable Bit
+477    
+478       000013           M_COD     EQU     19                                ; PLL Clock Output Disable Bit
+479    
+480       F00000           M_PD      EQU     $F00000                           ; PreDivider Factor Bits Mask (PD0-PD3)
+481    
+482       000014           M_PD0     EQU     20                                ; PreDivider Factor bit 0
+483    
+484       000015           M_PD1     EQU     21                                ; PreDivider Factor bit 1
+485    
+486       000016           M_PD2     EQU     22                                ; PreDivider Factor bit 2
+487    
+488       000017           M_PD3     EQU     23                                ; PreDivider Factor bit 3
+489    
+490    
+491    
+492                        ;------------------------------------------------------------------------
+493    
+494                        ;
+495    
+496                        ;       EQUATES for BIU
+497    
+498                        ;
+499    
+500                        ;------------------------------------------------------------------------
+501    
+502    
+503    
+504                        ;       Register Addresses Of BIU
+505    
+506    
+507    
+508       FFFFFB           M_BCR     EQU     $FFFFFB                           ; Bus Control Register
+509    
+510       FFFFFA           M_DCR     EQU     $FFFFFA                           ; DRAM Control Register
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 11
+
+
+
+511    
+512       FFFFF9           M_AAR0    EQU     $FFFFF9                           ; Address Attribute Register 0
+513    
+514       FFFFF8           M_AAR1    EQU     $FFFFF8                           ; Address Attribute Register 1
+515    
+516       FFFFF7           M_AAR2    EQU     $FFFFF7                           ; Address Attribute Register 2
+517    
+518       FFFFF6           M_AAR3    EQU     $FFFFF6                           ; Address Attribute Register 3
+519    
+520       FFFFF5           M_IDR     EQU     $FFFFF5                           ; ID Register
+521    
+522    
+523    
+524                        ;       Bus Control Register
+525    
+526    
+527    
+528       00001F           M_BA0W    EQU     $1F                               ; Area 0 Wait Control Mask (BA0W0-BA0W4)
+529    
+530       000000           M_BA0W0   EQU     0                                 ; Area 0 Wait Control Bit 0
+531    
+532       000001           M_BA0W1   EQU     1                                 ; Area 0 Wait Control Bit 1
+533    
+534       000002           M_BA0W2   EQU     2                                 ; Area 0 Wait Control Bit 2
+535    
+536       000003           M_BA0W3   EQU     3                                 ; Area 0 Wait Control Bit 3
+537    
+538       000004           M_BA0W4   EQU     4                                 ; Area 0 Wait Control Bit 4
+539    
+540       0003E0           M_BA1W    EQU     $3E0                              ; Area 1 Wait Control Mask (BA1W0-BA14)
+541    
+542       000005           M_BA1W0   EQU     5                                 ; Area 1 Wait Control Bit 0
+543    
+544       000006           M_BA1W1   EQU     6                                 ; Area 1 Wait Control Bit 1
+545    
+546       000007           M_BA1W2   EQU     7                                 ; Area 1 Wait Control Bit 2
+547    
+548       000008           M_BA1W3   EQU     8                                 ; Area 1 Wait Control Bit 3
+549    
+550       000009           M_BA1W4   EQU     9                                 ; Area 1 Wait Control Bit 4
+551    
+552       001C00           M_BA2W    EQU     $1C00                             ; Area 2 Wait Control Mask (BA2W0-BA2W2)
+553    
+554       00000A           M_BA2W0   EQU     10                                ; Area 2 Wait Control Bit 0
+555    
+556       00000B           M_BA2W1   EQU     11                                ; Area 2 Wait Control Bit 1
+557    
+558       00000C           M_BA2W2   EQU     12                                ; Area 2 Wait Control Bit 2
+559    
+560       00E000           M_BA3W    EQU     $E000                             ; Area 3 Wait Control Mask (BA3W0-BA3W3)
+561    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 12
+
+
+
+562       00000D           M_BA3W0   EQU     13                                ; Area 3 Wait Control Bit 0
+563    
+564       00000E           M_BA3W1   EQU     14                                ; Area 3 Wait Control Bit 1
+565    
+566       00000F           M_BA3W2   EQU     15                                ; Area 3 Wait Control Bit 2
+567    
+568       1F0000           M_BDFW    EQU     $1F0000                           ; Default Area Wait Control Mask (BDFW0-BDFW4)
+569    
+570       000010           M_BDFW0   EQU     16                                ; Default Area Wait Control bit 0
+571    
+572       000011           M_BDFW1   EQU     17                                ; Default Area Wait Control bit 1
+573    
+574       000012           M_BDFW2   EQU     18                                ; Default Area Wait Control bit 2
+575    
+576       000013           M_BDFW3   EQU     19                                ; Default Area Wait Control bit 3
+577    
+578       000014           M_BDFW4   EQU     20                                ; Default Area Wait Control bit 4
+579    
+580       000015           M_BBS     EQU     21                                ; Bus State
+581    
+582       000016           M_BLH     EQU     22                                ; Bus Lock Hold
+583    
+584       000017           M_BRH     EQU     23                                ; Bus Request Hold
+585    
+586    
+587    
+588                        ;       DRAM Control Register
+589    
+590    
+591    
+592       000003           M_BCW     EQU     $3                                ; In Page Wait States Bits Mask (BCW0-BCW1)
+593    
+594       000000           M_BCW0    EQU     0                                 ; In Page Wait States Bit 0
+595    
+596       000001           M_BCW1    EQU     1                                 ; In Page Wait States Bit 1
+597    
+598       00000C           M_BRW     EQU     $C                                ; Out Of Page Wait States Bits Mask (BRW0-BRW1)
+599    
+600       000002           M_BRW0    EQU     2                                 ; Out of Page Wait States bit 0
+601    
+602       000003           M_BRW1    EQU     3                                 ; Out of Page Wait States bit 1
+603    
+604       000300           M_BPS     EQU     $300                              ; DRAM Page Size Bits Mask (BPS0-BPS1)
+605    
+606       000004           M_BPS0    EQU     4                                 ; DRAM Page Size Bits 0
+607    
+608       000005           M_BPS1    EQU     5                                 ; DRAM Page Size Bits 1
+609    
+610       00000B           M_BPLE    EQU     11                                ; Page Logic Enable
+611    
+612       00000C           M_BME     EQU     12                                ; Mastership Enable
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 13
+
+
+
+613    
+614       00000D           M_BRE     EQU     13                                ; Refresh Enable
+615    
+616       00000E           M_BSTR    EQU     14                                ; Software Triggered Refresh
+617    
+618       7F8000           M_BRF     EQU     $7F8000                           ; Refresh Rate Bits Mask (BRF0-BRF7)
+619    
+620       00000F           M_BRF0    EQU     15                                ; Refresh Rate Bit 0
+621    
+622       000010           M_BRF1    EQU     16                                ; Refresh Rate Bit 1
+623    
+624       000011           M_BRF2    EQU     17                                ; Refresh Rate Bit 2
+625    
+626       000012           M_BRF3    EQU     18                                ; Refresh Rate Bit 3
+627    
+628       000013           M_BRF4    EQU     19                                ; Refresh Rate Bit 4
+629    
+630       000014           M_BRF5    EQU     20                                ; Refresh Rate Bit 5
+631    
+632       000015           M_BRF6    EQU     21                                ; Refresh Rate Bit 6
+633    
+634       000016           M_BRF7    EQU     22                                ; Refresh Rate Bit 7
+635    
+636       000017           M_BRP     EQU     23                                ; Refresh prescaler
+637    
+638    
+639    
+640                        ;       Address Attribute Registers
+641    
+642    
+643    
+644       000003           M_BAT     EQU     $3                                ; External Access Type and Pin Definition
+645                                                                            ; Bits Mask (BAT0-BAT1)
+646    
+647       000000           M_BAT0    EQU     0                                 ; External Access Type and Pin Definition
+648                                                                            ; Bits 0
+649    
+650       000001           M_BAT1    EQU     1                                 ; External Access Type and Pin Definition
+651                                                                            ; Bits 1
+652    
+653       000002           M_BAAP    EQU     2                                 ; Address Attribute Pin Polarity
+654    
+655       000003           M_BPEN    EQU     3                                 ; Program Space Enable
+656    
+657       000004           M_BXEN    EQU     4                                 ; X Data Space Enable
+658    
+659       000005           M_BYEN    EQU     5                                 ; Y Data Space Enable
+660    
+661       000006           M_BAM     EQU     6                                 ; Address Muxing
+662    
+663       000007           M_BPAC    EQU     7                                 ; Packing Enable
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 14
+
+
+
+664    
+665       000F00           M_BNC     EQU     $F00                              ; Number of Address Bits to Compare Mask
+666                                                                            ; (BNC0-BNC3)
+667    
+668       000008           M_BNC0    EQU     8                                 ; Number of Address Bits to Compare 0
+669    
+670       000009           M_BNC1    EQU     9                                 ; Number of Address Bits to Compare 1
+671    
+672       00000A           M_BNC2    EQU     10                                ; Number of Address Bits to Compare 2
+673    
+674       00000B           M_BNC3    EQU     11                                ; Number of Address Bits to Compare 3
+675    
+676       FFF000           M_BAC     EQU     $FFF000                           ; Address to Compare Bits Mask (BAC0-BAC11)
+677    
+678       00000C           M_BAC0    EQU     12                                ; Address to Compare Bits 0
+679    
+680       00000D           M_BAC1    EQU     13                                ; Address to Compare Bits 1
+681    
+682       00000E           M_BAC2    EQU     14                                ; Address to Compare Bits 2
+683    
+684       00000F           M_BAC3    EQU     15                                ; Address to Compare Bits 3
+685    
+686       000010           M_BAC4    EQU     16                                ; Address to Compare Bits 4
+687    
+688       000011           M_BAC5    EQU     17                                ; Address to Compare Bits 5
+689    
+690       000012           M_BAC6    EQU     18                                ; Address to Compare Bits 6
+691    
+692       000013           M_BAC7    EQU     19                                ; Address to Compare Bits 7
+693    
+694       000014           M_BAC8    EQU     20                                ; Address to Compare Bits 8
+695    
+696       000015           M_BAC9    EQU     21                                ; Address to Compare Bits 9
+697    
+698       000016           M_BAC10   EQU     22                                ; Address to Compare Bits 10
+699    
+700       000017           M_BAC11   EQU     23                                ; Address to Compare Bits 11
+701    
+702    
+703    
+704                        ;       control and status bits in SR
+705    
+706    
+707    
+708       000000           M_C       EQU     0                                 ; Carry
+709    
+710       000001           M_V       EQU     1                                 ; Overflow
+711    
+712       000002           M_Z       EQU     2                                 ; Zero
+713    
+714       000003           M_N       EQU     3                                 ; Negative
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 15
+
+
+
+715    
+716       000004           M_U       EQU     4                                 ; Unnormalized
+717    
+718       000005           M_E       EQU     5                                 ; Extension
+719    
+720       000006           M_L       EQU     6                                 ; Limit
+721    
+722       000007           M_S       EQU     7                                 ; Scaling Bit
+723    
+724       000008           M_I0      EQU     8                                 ; Interupt Mask Bit 0
+725    
+726       000009           M_I1      EQU     9                                 ; Interupt Mask Bit 1
+727    
+728       00000A           M_S0      EQU     10                                ; Scaling Mode Bit 0
+729    
+730       00000B           M_S1      EQU     11                                ; Scaling Mode Bit 1
+731    
+732       00000D           M_SC      EQU     13                                ; Sixteen_Bit Compatibility
+733    
+734       00000E           M_DM      EQU     14                                ; Double Precision Multiply
+735    
+736       00000F           M_LF      EQU     15                                ; DO-Loop Flag
+737    
+738       000010           M_FV      EQU     16                                ; DO-Forever Flag
+739    
+740       000011           M_SA      EQU     17                                ; Sixteen-Bit Arithmetic
+741    
+742       000013           M_CE      EQU     19                                ; Instruction Cache Enable
+743    
+744       000014           M_SM      EQU     20                                ; Arithmetic Saturation
+745    
+746       000015           M_RM      EQU     21                                ; Rounding Mode
+747    
+748       C00000           M_CP      EQU     $c00000                           ; mask for CORE-DMA priority bits in SR
+749    
+750       000016           M_CP0     EQU     22                                ; bit 0 of priority bits in SR
+751    
+752       000017           M_CP1     EQU     23                                ; bit 1 of priority bits in SR
+753    
+754    
+755    
+756                        ;       control and status bits in OMR
+757    
+758    
+759    
+760       000000           M_MA      EQU     0                                 ; Operating Mode A
+761    
+762       000001           M_MB      EQU     1                                 ; Operating Mode B
+763    
+764       000002           M_MC      EQU     2                                 ; Operating Mode C
+765    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 16
+
+
+
+766       000003           M_MD      EQU     3                                 ; Operating Mode D
+767    
+768       000004           M_EBD     EQU     4                                 ; External Bus Disable bit in OMR
+769    
+770       000006           M_SD      EQU     6                                 ; Stop Delay
+771    
+772       000007           M_MS      EQU     7                                 ; Memory Switch Mode
+773    
+774       000300           M_CDP     EQU     $300                              ; mask for CORE-DMA priority bits in OMR
+775    
+776       000008           M_CDP0    EQU     8                                 ; bit 0 of priority bits in OMR Core DMA
+777    
+778       000009           M_CDP1    EQU     9                                 ; bit 1 of priority bits in OMR Core DMA
+779    
+780       00000A           M_BE      EQU     10                                ; Burst Enable
+781    
+782       00000B           M_TAS     EQU     11                                ; TA Synchronize Select
+783    
+784       00000C           M_BRT     EQU     12                                ; Bus Release Timing
+785    
+786       00000D           M_ABE     EQU     13                                ; Async. Bus Arbitration Enable
+787    
+788       00000E           M_APD     EQU     14                                ; Addess Priority Disable
+789    
+790       00000F           M_ATE     EQU     15                                ; Address Tracing Enable
+791    
+792       000010           M_XYS     EQU     16                                ; Stack Extension space select bit in OMR.
+793    
+794       000011           M_EUN     EQU     17                                ; Extensed stack UNderflow flag in OMR.
+795    
+796       000012           M_EOV     EQU     18                                ; Extended stack OVerflow flag in OMR.
+797    
+798       000013           M_WRP     EQU     19                                ; Extended WRaP flag in OMR.
+799    
+800       000014           M_SEN     EQU     20                                ; Stack Extension Enable bit in OMR.
+801    
+802       000017           M_PAEN    EQU     23                                ; Patch Enable
+803    
+804    
+805    
+806                        ;------------------------------------------------------------------------
+807    
+808                        ;
+809    
+810                        ;       EQUATES for DAX (SPDIF Tx)
+811    
+812                        ;
+813    
+814                        ;------------------------------------------------------------------------
+815    
+816    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 17
+
+
+
+817    
+818                        ;       Register Addresses
+819    
+820    
+821    
+822       FFFFD4           M_XSTR    EQU     $FFFFD4                           ; DAX Status Register (XSTR)
+823    
+824       FFFFD3           M_XADRB   EQU     $FFFFD3                           ; DAX Audio Data Register B (XADRB)
+825    
+826       FFFFD2           M_XADR    EQU     $FFFFD2                           ; DAX Audio Data Register (XADR)
+827    
+828       FFFFD2           M_XADRA   EQU     $FFFFD2                           ; DAX Audio Data Register A (XADRA)
+829    
+830       FFFFD1           M_XNADR   EQU     $FFFFD1                           ; DAX Non-Audio Data Register (XNADR)
+831    
+832       FFFFD0           M_XCTR    EQU     $FFFFD0                           ; DAX Control Register (XCTR)
+833    
+834    
+835    
+836                        ;       status bits in XSTR
+837    
+838    
+839    
+840       000000           M_XADE    EQU     0                                 ; DAX Audio Data Register Empty (XADE)
+841    
+842       000001           M_XAUR    EQU     1                                 ; DAX Trasmit Underrun Error Flag (XAUR)
+843    
+844       000002           M_XBLK    EQU     2                                 ; DAX Block Transferred (XBLK)
+845    
+846    
+847    
+848                        ;       non-audio bits in XNADR
+849    
+850    
+851    
+852       00000A           M_XVA     EQU     10                                ; DAX Channel A Validity (XVA)
+853    
+854       00000B           M_XUA     EQU     11                                ; DAX Channel A User Data (XUA)
+855    
+856       00000C           M_XCA     EQU     12                                ; DAX Channel A Channel Status (XCA)
+857    
+858       00000D           M_XVB     EQU     13                                ; DAX Channel B Validity (XVB)
+859    
+860       00000E           M_XUB     EQU     14                                ; DAX Channel B User Data (XUB)
+861    
+862       00000F           M_XCB     EQU     15                                ; DAX Channel B Channel Status (XCB)
+863    
+864    
+865    
+866                        ;       control bits in XCTR
+867    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 18
+
+
+
+868    
+869    
+870       000000           M_XDIE    EQU     0                                 ; DAX Audio Data Register Empty Interrupt
+871                                                                            ; Enable (XDIE)
+872    
+873       000001           M_XUIE    EQU     1                                 ; DAX Underrun Error Interrupt Enable (XUIE)
+874    
+875       000002           M_XBIE    EQU     2                                 ; DAX Block Transferred Interrupt Enable
+876                                                                            ; (XBIE)
+877    
+878       000003           M_XCS0    EQU     3                                 ; DAX Clock Input Select 0 (XCS0)
+879    
+880       000004           M_XCS1    EQU     4                                 ; DAX Clock Input Select 1 (XCS1)
+881    
+882       000005           M_XSB     EQU     5                                 ; DAX Start Block (XSB)
+883    
+884    
+885    
+886                        ;------------------------------------------------------------------------
+887    
+888                        ;
+889    
+890                        ;       EQUATES for SHI
+891    
+892                        ;
+893    
+894                        ;------------------------------------------------------------------------
+895    
+896    
+897    
+898                        ;       Register Addresses
+899    
+900    
+901    
+902       FFFF94           M_HRX     EQU     $FFFF94                           ; SHI Receive FIFO (HRX)
+903    
+904       FFFF93           M_HTX     EQU     $FFFF93                           ; SHI Transmit Register (HTX)
+905    
+906       FFFF92           M_HSAR    EQU     $FFFF92                           ; SHI I2C Slave Address Register (HSAR)
+907    
+908       FFFF91           M_HCSR    EQU     $FFFF91                           ; SHI Control/Status Register (HCSR)
+909    
+910       FFFF90           M_HCKR    EQU     $FFFF90                           ; SHI Clock Control Register (HCKR)
+911    
+912    
+913    
+914                        ;       HSAR bits
+915    
+916    
+917    
+918       000017           M_HA6     EQU     23                                ; SHI I2C Slave Address (HA6)
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 19
+
+
+
+919    
+920       000016           M_HA5     EQU     22                                ; SHI I2C Slave Address (HA5)
+921    
+922       000015           M_HA4     EQU     21                                ; SHI I2C Slave Address (HA4)
+923    
+924       000014           M_HA3     EQU     20                                ; SHI I2C Slave Address (HA3)
+925    
+926       000012           M_HA1     EQU     18                                ; SHI I2C Slave Address (HA1)
+927    
+928    
+929    
+930                        ;      control and status bits in HCSR
+931    
+932    
+933    
+934       000016           M_HBUSY   EQU     22                                ; SHI Host Busy (HBUSY)
+935    
+936       000015           M_HBER    EQU     21                                ; SHI Bus Error (HBER)
+937    
+938       000014           M_HROE    EQU     20                                ; SHI Receive Overrun Error (HROE)
+939    
+940       000013           M_HRFF    EQU     19                                ; SHI Receivr FIFO Full (HRFF)
+941    
+942       000011           M_HRNE    EQU     17                                ; SHI Receive FIFO Not Empty (HRNE)
+943    
+944       00000F           M_HTDE    EQU     15                                ; SHI Host Transmit data Empty (HTDE)
+945    
+946       00000E           M_HTUE    EQU     14                                ; SHI Host Transmit Underrun Error (HTUE)
+947    
+948       00000D           M_HRIE1   EQU     13                                ; SHI Receive Interrupt Enable (HRIE1)
+949    
+950       00000C           M_HRIE0   EQU     12                                ; SHI Receive Interrupt Enable (HRIE0)
+951    
+952       00000B           M_HTIE    EQU     11                                ; SHI Transmit Interrupt Enable (HTIE)
+953    
+954       00000A           M_HBIE    EQU     10                                ; SHI Bus-Error Interrupt Enable (HBIE)
+955    
+956       000009           M_HIDLE   EQU     9                                 ; SHI Idle (HIDLE)
+957    
+958       000008           M_HRQE1   EQU     8                                 ; SHI Host Request Enable (HRQE1)
+959    
+960       000007           M_HRQE0   EQU     7                                 ; SHI Host Request Enable (HRQE0)
+961    
+962       000006           M_HMST    EQU     6                                 ; SHI Master Mode (HMST)
+963    
+964       000005           M_HFIFO   EQU     5                                 ; SHI FIFO Enable Control (HFIFO)
+965    
+966       000004           M_HCKFR   EQU     4                                 ; SHI Clock Freeze (HCKFR)
+967    
+968       000003           M_HM1     EQU     3                                 ; SHI Serial Host Interface Mode (HM1)
+969    
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 20
+
+
+
+970       000002           M_HM0     EQU     2                                 ; SHI Serial Host Interface Mode (HM0)
+971    
+972       000001           M_HI2C    EQU     1                                 ; SHI I2c/SPI Selection (HI2C)
+973    
+974       000000           M_HEN     EQU     0                                 ; SHI Host Enable (HEN)
+975    
+976    
+977    
+978                        ;       control bits in HCKR
+979    
+980    
+981    
+982       00000D           M_HFM1    EQU     13                                ; SHI Filter Model (HFM1)
+983    
+984       00000C           M_HFM0    EQU     12                                ; SHI Filter Model (HFM0)
+985    
+986       00000A           M_HDM7    EQU     10                                ; SHI Divider Modulus Select (HDM7)
+987    
+988       000009           M_HDM6    EQU     9                                 ; SHI Divider Modulus Select (HDM6)
+989    
+990       000008           M_HDM5    EQU     8                                 ; SHI Divider Modulus Select (HDM5)
+991    
+992       000007           M_HDM4    EQU     7                                 ; SHI Divider Modulus Select (HDM4)
+993    
+994       000006           M_HDM3    EQU     6                                 ; SHI Divider Modulus Select (HDM3)
+995    
+996       000005           M_HDM2    EQU     5                                 ; SHI Divider Modulus Select (HDM2)
+997    
+998       000004           M_HDM1    EQU     4                                 ; SHI Divider Modulus Select (HDM1)
+999    
+1000      000003           M_HDM0    EQU     3                                 ; SHI Divider Modulus Select (HDM0)
+1001   
+1002      000002           M_HRS     EQU     2                                 ; SHI Prescalar Rate Select (HRS)
+1003   
+1004      000001           M_CPOL    EQU     1                                 ; SHI Clock Polarity (CPOL)
+1005   
+1006      000000           M_CPHA    EQU     0                                 ; SHI Clock Phase (CPHA)
+1007   
+1008   
+1009   
+1010                       ;------------------------------------------------------------------------
+1011   
+1012                       ;
+1013   
+1014                       ;       EQUATES for ESAI
+1015   
+1016                       ;
+1017   
+1018                       ;------------------------------------------------------------------------
+1019   
+1020   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 21
+
+
+
+1021   
+1022                       ;       Register Addresses
+1023   
+1024   
+1025   
+1026      FFFFBC           M_RSMB    EQU     $FFFFBC                           ; ESAI Receive Slot Mask Register B (RSMB)
+1027   
+1028      FFFFBB           M_RSMA    EQU     $FFFFBB                           ; ESAI Receive Slot Mask Register A (RSMA)
+1029   
+1030      FFFFBA           M_TSMB    EQU     $FFFFBA                           ; ESAI Transmit Slot Mask Register B (TSMB)
+1031   
+1032      FFFFB9           M_TSMA    EQU     $FFFFB9                           ; ESAI Transmit Slot Mask Register A (TSMA)
+1033   
+1034      FFFFB8           M_RCCR    EQU     $FFFFB8                           ; ESAI Receive Clock Control Register (RCCR)
+1035   
+1036      FFFFB7           M_RCR     EQU     $FFFFB7                           ; ESAI Receive Control Register (RCR)
+1037   
+1038      FFFFB6           M_TCCR    EQU     $FFFFB6                           ; ESAI Transmit Clock Control Register (TCCR)
+1039   
+1040      FFFFB5           M_TCR     EQU     $FFFFB5                           ; ESAI Transmit Control Register (TCR)
+1041   
+1042      FFFFB4           M_SAICR   EQU     $FFFFB4                           ; ESAI Control Register (SAICR)
+1043   
+1044      FFFFB3           M_SAISR   EQU     $FFFFB3                           ; ESAI Status Register (SAISR)
+1045   
+1046      FFFFAB           M_RX3     EQU     $FFFFAB                           ; ESAI Receive Data Register 3 (RX3)
+1047   
+1048      FFFFAA           M_RX2     EQU     $FFFFAA                           ; ESAI Receive Data Register 2 (RX2)
+1049   
+1050      FFFFA9           M_RX1     EQU     $FFFFA9                           ; ESAI Receive Data Register 1 (RX1)
+1051   
+1052      FFFFA8           M_RX0     EQU     $FFFFA8                           ; ESAI Receive Data Register 0 (RX0)
+1053   
+1054      FFFFA6           M_TSR     EQU     $FFFFA6                           ; ESAI Time Slot Register (TSR)
+1055   
+1056      FFFFA5           M_TX5     EQU     $FFFFA5                           ; ESAI Transmit Data Register 5 (TX5)
+1057   
+1058      FFFFA4           M_TX4     EQU     $FFFFA4                           ; ESAI Transmit Data Register 4 (TX4)
+1059   
+1060      FFFFA3           M_TX3     EQU     $FFFFA3                           ; ESAI Transmit Data Register 3 (TX3)
+1061   
+1062      FFFFA2           M_TX2     EQU     $FFFFA2                           ; ESAI Transmit Data Register 2 (TX2)
+1063   
+1064      FFFFA1           M_TX1     EQU     $FFFFA1                           ; ESAI Transmit Data Register 1 (TX1)
+1065   
+1066      FFFFA0           M_TX0     EQU     $FFFFA0                           ; ESAI Transmit Data Register 0 (TX0)
+1067   
+1068   
+1069   
+1070                       ;       RSMB Register bits
+1071   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 22
+
+
+
+1072   
+1073   
+1074      00000F           M_RS31    EQU     15                                ; ESAI
+1075   
+1076      00000E           M_RS30    EQU     14                                ; ESAI
+1077   
+1078      00000D           M_RS29    EQU     13                                ; ESAI
+1079   
+1080      00000C           M_RS28    EQU     12                                ; ESAI
+1081   
+1082      00000B           M_RS27    EQU     11                                ; ESAI
+1083   
+1084      00000A           M_RS26    EQU     10                                ; ESAI
+1085   
+1086      000009           M_RS25    EQU     9                                 ; ESAI
+1087   
+1088      000008           M_RS24    EQU     8                                 ; ESAI
+1089   
+1090      000007           M_RS23    EQU     7                                 ; ESAI
+1091   
+1092      000006           M_RS22    EQU     6                                 ; ESAI
+1093   
+1094      000005           M_RS21    EQU     5                                 ; ESAI
+1095   
+1096      000004           M_RS20    EQU     4                                 ; ESAI
+1097   
+1098      000003           M_RS19    EQU     3                                 ; ESAI
+1099   
+1100      000002           M_RS18    EQU     2                                 ; ESAI
+1101   
+1102      000001           M_RS17    EQU     1                                 ; ESAI
+1103   
+1104      000000           M_RS16    EQU     0                                 ; ESAI
+1105   
+1106   
+1107   
+1108                       ;       RSMA Register bits
+1109   
+1110   
+1111   
+1112      00000F           M_RS15    EQU     15                                ; ESAI
+1113   
+1114      00000E           M_RS14    EQU     14                                ; ESAI
+1115   
+1116      00000D           M_RS13    EQU     13                                ; ESAI
+1117   
+1118      00000C           M_RS12    EQU     12                                ; ESAI
+1119   
+1120      00000B           M_RS11    EQU     11                                ; ESAI
+1121   
+1122      00000A           M_RS10    EQU     10                                ; ESAI
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 23
+
+
+
+1123   
+1124      000009           M_RS9     EQU     9                                 ; ESAI
+1125   
+1126      000008           M_RS8     EQU     8                                 ; ESAI
+1127   
+1128      000007           M_RS7     EQU     7                                 ; ESAI
+1129   
+1130      000006           M_RS6     EQU     6                                 ; ESAI
+1131   
+1132      000005           M_RS5     EQU     5                                 ; ESAI
+1133   
+1134      000004           M_RS4     EQU     4                                 ; ESAI
+1135   
+1136      000003           M_RS3     EQU     3                                 ; ESAI
+1137   
+1138      000002           M_RS2     EQU     2                                 ; ESAI
+1139   
+1140      000001           M_RS1     EQU     1                                 ; ESAI
+1141   
+1142      000000           M_RS0     EQU     0                                 ; ESAI
+1143   
+1144   
+1145   
+1146                       ;       TSMB Register bits
+1147   
+1148   
+1149   
+1150      00000F           M_TS31    EQU     15                                ; ESAI
+1151   
+1152      00000E           M_TS30    EQU     14                                ; ESAI
+1153   
+1154      00000D           M_TS29    EQU     13                                ; ESAI
+1155   
+1156      00000C           M_TS28    EQU     12                                ; ESAI
+1157   
+1158      00000B           M_TS27    EQU     11                                ; ESAI
+1159   
+1160      00000A           M_TS26    EQU     10                                ; ESAI
+1161   
+1162      000009           M_TS25    EQU     9                                 ; ESAI
+1163   
+1164      000008           M_TS24    EQU     8                                 ; ESAI
+1165   
+1166      000007           M_TS23    EQU     7                                 ; ESAI
+1167   
+1168      000006           M_TS22    EQU     6                                 ; ESAI
+1169   
+1170      000005           M_TS21    EQU     5                                 ; ESAI
+1171   
+1172      000004           M_TS20    EQU     4                                 ; ESAI
+1173   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 24
+
+
+
+1174      000003           M_TS19    EQU     3                                 ; ESAI
+1175   
+1176      000002           M_TS18    EQU     2                                 ; ESAI
+1177   
+1178      000001           M_TS17    EQU     1                                 ; ESAI
+1179   
+1180      000000           M_TS16    EQU     0                                 ; ESAI
+1181   
+1182   
+1183   
+1184                       ;       TSMA Register bits
+1185   
+1186   
+1187   
+1188      00000F           M_TS15    EQU     15                                ; ESAI
+1189   
+1190      00000E           M_TS14    EQU     14                                ; ESAI
+1191   
+1192      00000D           M_TS13    EQU     13                                ; ESAI
+1193   
+1194      00000C           M_TS12    EQU     12                                ; ESAI
+1195   
+1196      00000B           M_TS11    EQU     11                                ; ESAI
+1197   
+1198      00000A           M_TS10    EQU     10                                ; ESAI
+1199   
+1200      000009           M_TS9     EQU     9                                 ; ESAI
+1201   
+1202      000008           M_TS8     EQU     8                                 ; ESAI
+1203   
+1204      000007           M_TS7     EQU     7                                 ; ESAI
+1205   
+1206      000006           M_TS6     EQU     6                                 ; ESAI
+1207   
+1208      000005           M_TS5     EQU     5                                 ; ESAI
+1209   
+1210      000004           M_TS4     EQU     4                                 ; ESAI
+1211   
+1212      000003           M_TS3     EQU     3                                 ; ESAI
+1213   
+1214      000002           M_TS2     EQU     2                                 ; ESAI
+1215   
+1216      000001           M_TS1     EQU     1                                 ; ESAI
+1217   
+1218      000000           M_TS0     EQU     0                                 ; ESAI
+1219   
+1220   
+1221   
+1222                       ;       RCCR Register bits
+1223   
+1224   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 25
+
+
+
+1225   
+1226      000017           M_RHCKD   EQU     23                                ; ESAI
+1227   
+1228      000016           M_RFSD    EQU     22                                ; ESAI
+1229   
+1230      000015           M_RCKD    EQU     21                                ; ESAI
+1231   
+1232      000014           M_RHCKP   EQU     20                                ; ESAI
+1233   
+1234      000013           M_RFSP    EQU     19                                ; ESAI
+1235   
+1236      000012           M_RCKP    EQU     18                                ; ESAI
+1237   
+1238      03C000           M_RFP     EQU     $3C000                            ; ESAI MASK
+1239   
+1240      000011           M_RFP3    EQU     17                                ; ESAI
+1241   
+1242      000010           M_RFP2    EQU     16                                ; ESAI
+1243   
+1244      00000F           M_RFP1    EQU     15                                ; ESAI
+1245   
+1246      00000E           M_RFP0    EQU     14                                ; ESAI
+1247   
+1248      003E00           M_RDC     EQU     $3E00                             ; ESAI MASK
+1249   
+1250      00000D           M_RDC4    EQU     13                                ; ESAI
+1251   
+1252      00000C           M_RDC3    EQU     12                                ; ESAI
+1253   
+1254      00000B           M_RDC2    EQU     11                                ; ESAI
+1255   
+1256      00000A           M_RDC1    EQU     10                                ; ESAI
+1257   
+1258      000009           M_RDC0    EQU     9                                 ; ESAI
+1259   
+1260      000008           M_RPSR    EQU     8                                 ; ESAI
+1261   
+1262      0000FF           M_RPM     EQU     $FF
+1263   
+1264      000007           M_RPM7    EQU     7                                 ; ESAI
+1265   
+1266      000006           M_RPM6    EQU     6                                 ; ESAI
+1267   
+1268      000005           M_RPM5    EQU     5                                 ; ESAI
+1269   
+1270      000004           M_RPM4    EQU     4                                 ; ESAI
+1271   
+1272      000003           M_RPM3    EQU     3                                 ; ESAI
+1273   
+1274      000002           M_RPM2    EQU     2                                 ; ESAI
+1275   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 26
+
+
+
+1276      000001           M_RPM1    EQU     1                                 ; ESAI
+1277   
+1278      000000           M_RPM0    EQU     0                                 ; ESAI
+1279   
+1280   
+1281   
+1282                       ;       RCR Register bits
+1283   
+1284   
+1285   
+1286      000017           M_RLIE    EQU     23                                ; ESAI
+1287   
+1288      000016           M_RIE     EQU     22                                ; ESAI
+1289   
+1290      000015           M_REDIE   EQU     21                                ; ESAI
+1291   
+1292      000014           M_REIE    EQU     20                                ; ESAI
+1293   
+1294      000010           M_RFSR    EQU     16                                ; ESAI
+1295   
+1296      00000F           M_RFSL    EQU     15                                ; ESAI
+1297   
+1298      007C00           M_RSWS    EQU     $7C00                             ; ESAI MASK
+1299   
+1300      00000E           M_RSWS4   EQU     14                                ; ESAI
+1301   
+1302      00000D           M_RSWS3   EQU     13                                ; ESAI
+1303   
+1304      00000C           M_RSWS2   EQU     12                                ; ESAI
+1305   
+1306      00000B           M_RSWS1   EQU     11                                ; ESAI
+1307   
+1308      00000A           M_RSWS0   EQU     10                                ; ESAI
+1309   
+1310      000300           M_RMOD    EQU     $300
+1311   
+1312      000009           M_RMOD1   EQU     9                                 ; ESAI
+1313   
+1314      000008           M_RMOD0   EQU     8                                 ; ESAI
+1315   
+1316      000007           M_RWA     EQU     7                                 ; ESAI
+1317   
+1318      000006           M_RSHFD   EQU     6                                 ; ESAI
+1319   
+1320      00000F           M_RE      EQU     $F
+1321   
+1322      000003           M_RE3     EQU     3                                 ; ESAI
+1323   
+1324      000002           M_RE2     EQU     2                                 ; ESAI
+1325   
+1326      000001           M_RE1     EQU     1                                 ; ESAI
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 27
+
+
+
+1327   
+1328      000000           M_RE0     EQU     0                                 ; ESAI
+1329   
+1330   
+1331   
+1332                       ;       TCCR Register bits
+1333   
+1334   
+1335   
+1336      000017           M_THCKD   EQU     23                                ; ESAI
+1337   
+1338      000016           M_TFSD    EQU     22                                ; ESAI
+1339   
+1340      000015           M_TCKD    EQU     21                                ; ESAI
+1341   
+1342      000014           M_THCKP   EQU     20                                ; ESAI
+1343   
+1344      000013           M_TFSP    EQU     19                                ; ESAI
+1345   
+1346      000012           M_TCKP    EQU     18                                ; ESAI
+1347   
+1348      03C000           M_TFP     EQU     $3C000
+1349   
+1350      000011           M_TFP3    EQU     17                                ; ESAI
+1351   
+1352      000010           M_TFP2    EQU     16                                ; ESAI
+1353   
+1354      00000F           M_TFP1    EQU     15                                ; ESAI
+1355   
+1356      00000E           M_TFP0    EQU     14                                ; ESAI
+1357   
+1358      003E00           M_TDC     EQU     $3E00
+1359   
+1360      00000D           M_TDC4    EQU     13                                ; ESAI
+1361   
+1362      00000C           M_TDC3    EQU     12                                ; ESAI
+1363   
+1364      00000B           M_TDC2    EQU     11                                ; ESAI
+1365   
+1366      00000A           M_TDC1    EQU     10                                ; ESAI
+1367   
+1368      000009           M_TDC0    EQU     9                                 ; ESAI
+1369   
+1370      000008           M_TPSR    EQU     8                                 ; ESAI
+1371   
+1372      0000FF           M_TPM     EQU     $FF
+1373   
+1374      000007           M_TPM7    EQU     7                                 ; ESAI
+1375   
+1376      000006           M_TPM6    EQU     6                                 ; ESAI
+1377   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 28
+
+
+
+1378      000005           M_TPM5    EQU     5                                 ; ESAI
+1379   
+1380      000004           M_TPM4    EQU     4                                 ; ESAI
+1381   
+1382      000003           M_TPM3    EQU     3                                 ; ESAI
+1383   
+1384      000002           M_TPM2    EQU     2                                 ; ESAI
+1385   
+1386      000001           M_TPM1    EQU     1                                 ; ESAI
+1387   
+1388      000000           M_TPM0    EQU     0                                 ; ESAI
+1389   
+1390   
+1391   
+1392                       ;       TCR Register bits
+1393   
+1394   
+1395   
+1396      000017           M_TLIE    EQU     23                                ; ESAI
+1397   
+1398      000016           M_TIE     EQU     22                                ; ESAI
+1399   
+1400      000015           M_TEDIE   EQU     21                                ; ESAI
+1401   
+1402      000014           M_TEIE    EQU     20                                ; ESAI
+1403   
+1404      000010           M_TFSR    EQU     16                                ; ESAI
+1405   
+1406      00000F           M_TFSL    EQU     15                                ; ESAI
+1407   
+1408      007C00           M_TSWS    EQU     $7C00
+1409   
+1410      00000E           M_TSWS4   EQU     14                                ; ESAI
+1411   
+1412      00000D           M_TSWS3   EQU     13                                ; ESAI
+1413   
+1414      00000C           M_TSWS2   EQU     12                                ; ESAI
+1415   
+1416      00000B           M_TSWS1   EQU     11                                ; ESAI
+1417   
+1418      00000A           M_TSWS0   EQU     10                                ; ESAI
+1419   
+1420      000300           M_TMOD    EQU     $300
+1421   
+1422      000009           M_TMOD1   EQU     9                                 ; ESAI
+1423   
+1424      000008           M_TMOD0   EQU     8                                 ; ESAI
+1425   
+1426      000007           M_TWA     EQU     7                                 ; ESAI
+1427   
+1428      000006           M_TSHFD   EQU     6                                 ; ESAI
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 29
+
+
+
+1429   
+1430      00003F           M_TEM     EQU     $3F
+1431   
+1432      000005           M_TE5     EQU     5                                 ; ESAI
+1433   
+1434      000004           M_TE4     EQU     4                                 ; ESAI
+1435   
+1436      000003           M_TE3     EQU     3                                 ; ESAI
+1437   
+1438      000002           M_TE2     EQU     2                                 ; ESAI
+1439   
+1440      000001           M_TE1     EQU     1                                 ; ESAI
+1441   
+1442      000000           M_TE0     EQU     0                                 ; ESAI
+1443   
+1444   
+1445   
+1446                       ;       control bits of SAICR
+1447   
+1448   
+1449   
+1450      000008           M_ALC     EQU     8                                 ;ESAI
+1451   
+1452      000007           M_TEBE    EQU     7                                 ; ESAI
+1453   
+1454      000006           M_SYN     EQU     6                                 ; ESAI
+1455   
+1456      000002           M_OF2     EQU     2                                 ; ESAI
+1457   
+1458      000001           M_OF1     EQU     1                                 ; ESAI
+1459   
+1460      000000           M_OF0     EQU     0                                 ; ESAI
+1461   
+1462   
+1463   
+1464                       ;       status bits of SAISR
+1465   
+1466   
+1467   
+1468      000011           M_TODE    EQU     17                                ; ESAI
+1469   
+1470      000010           M_TEDE    EQU     16                                ; ESAI
+1471   
+1472      00000F           M_TDE     EQU     15                                ; ESAI
+1473   
+1474      00000E           M_TUE     EQU     14                                ; ESAI
+1475   
+1476      00000D           M_TFS     EQU     13                                ; ESAI
+1477   
+1478      00000A           M_RODF    EQU     10                                ; ESAI
+1479   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 30
+
+
+
+1480      000009           M_REDF    EQU     9                                 ; ESAI
+1481   
+1482      000008           M_RDF     EQU     8                                 ; ESAI
+1483   
+1484      000007           M_ROE     EQU     7                                 ; ESAI
+1485   
+1486      000006           M_RFS     EQU     6                                 ; ESAI
+1487   
+1488      000002           M_IF2     EQU     2                                 ; ESAI
+1489   
+1490      000001           M_IF1     EQU     1                                 ; ESAI
+1491   
+1492      000000           M_IF0     EQU     0                                 ; ESAI
+1493   
+1494   
+1495   
+1496                       ;------------------------------------------------------------------------
+1497   
+1498                       ;
+1499   
+1500                       ;       EQUATES for HDI08
+1501   
+1502                       ;
+1503   
+1504                       ;------------------------------------------------------------------------
+1505   
+1506   
+1507   
+1508                       ;       Register Addresses
+1509   
+1510   
+1511   
+1512      FFFFC7           M_HOTX    EQU     $FFFFC7                           ; HOST Transmit Register (HOTX)
+1513   
+1514      FFFFC6           M_HORX    EQU     $FFFFC6                           ; HOST Receive Register (HORX)
+1515   
+1516      FFFFC5           M_HBAR    EQU     $FFFFC5                           ; HOST Base Address Register (HBAR)
+1517   
+1518      FFFFC4           M_HPCR    EQU     $FFFFC4                           ; HOST Polarity Control Register (HPCR)
+1519   
+1520      FFFFC3           M_HSR     EQU     $FFFFC3                           ; HOST Status Register (HSR)
+1521   
+1522      FFFFC2           M_HCR     EQU     $FFFFC2                           ; HOST Control Register (HCR)
+1523   
+1524   
+1525   
+1526   
+1527   
+1528                       ;       HCR bits
+1529   
+1530   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 31
+
+
+
+1531   
+1532      000000           M_HRIE    EQU     $0                                ; HOST Receive interrupts Enable
+1533   
+1534      000001           M_HOTIE   EQU     $1                                ; HOST Transmit Interrupt Enable
+1535   
+1536      000002           M_HCIE    EQU     $2                                ; HOST Command Interrupt Enable
+1537   
+1538      000003           M_HF2     EQU     $3                                ; HOST Flag 2
+1539   
+1540      000004           M_HF3     EQU     $4                                ; HOST Flag 3
+1541   
+1542      000005           M_HODM0   EQU     $5                                ; HOST DMA Mode Control Bit 0
+1543   
+1544      000006           M_HODM1   EQU     $6                                ; HOST DMA Mode Control Bit 1
+1545   
+1546      000007           M_HODM2   EQU     $7                                ; HOST DMA Mode Control Bit 2
+1547   
+1548   
+1549   
+1550                       ;       HSR bits
+1551   
+1552   
+1553   
+1554      000000           M_HRDF    EQU     $0                                ; HOST Receive Data Full
+1555   
+1556      000001           M_HOTDE   EQU     $1                                ; HOST Receive Data Emptiy
+1557   
+1558      000002           M_HCP     EQU     $2                                ; HOST Command Pending
+1559   
+1560      000003           M_HF0     EQU     $3                                ; HOST Flag 0
+1561   
+1562      000004           M_HF1     EQU     $4                                ; HOST Flag 1
+1563   
+1564      000007           M_DMA     EQU     $7                                ; HOST DMA Status
+1565   
+1566   
+1567   
+1568                       ;       HPCR bits
+1569   
+1570   
+1571   
+1572      000000           M_HGEN    EQU     $0                                ; HOST Port Enable
+1573   
+1574      000001           M_HA8EN   EQU     $1                                ; HOST Address 8 Enable
+1575   
+1576      000002           M_HA9EN   EQU     $2                                ; HOST Address 9 Enable
+1577   
+1578      000003           M_HCSEN   EQU     $3                                ; HOST Chip Select Enable
+1579   
+1580      000004           M_HREN    EQU     $4                                ; HOST Request Enable
+1581   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 32
+
+
+
+1582      000005           M_HAEN    EQU     $5                                ; HOST Acknowledge Enable
+1583   
+1584      000006           M_HOEN    EQU     $6                                ; HOST Enable
+1585   
+1586      000008           M_HROD    EQU     $8                                ; HOST Request Open Dranin mode
+1587   
+1588      000009           M_HDSP    EQU     $9                                ; HOST Data Strobe Polarity
+1589   
+1590      00000A           M_HASP    EQU     $a                                ; HOST Address Strobe Polarity
+1591   
+1592      00000B           M_HMUX    EQU     $b                                ; HOST Multiplexed bus select
+1593   
+1594      00000C           M_HDDS    EQU     $c                                ; HOST Double/Single Strobe select
+1595   
+1596      00000D           M_HCSP    EQU     $d                                ; HOST Chip Select Polarity
+1597   
+1598      00000E           M_HRP     EQU     $e                                ; HOST Request PolarityPolarity
+1599   
+1600      00000F           M_HAP     EQU     $f                                ; HOST Acknowledge Polarity
+1601   
+1602   
+1603   
+1604                       ;                  HBAR  BITS
+1605   
+1606   
+1607   
+1608      0000FF           M_BA      EQU     $FF
+1609   
+1610      000007           M_BA10    EQU     7
+1611   
+1612      000006           M_BA9     EQU     6
+1613   
+1614      000005           M_BA8     EQU     5
+1615   
+1616      000004           M_BA7     EQU     4
+1617   
+1618      000003           M_BA6     EQU     3
+1619   
+1620      000002           M_BA5     EQU     2
+1621   
+1622      000001           M_BA4     EQU     1
+1623   
+1624      000000           M_BA3     EQU     0
+1625   
+1626   
+1627   
+1628                       ;-----------------------------------------------------------------------
+1629   
+1630                       ;
+1631   
+1632                       ;       EQUATES for TIMER
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 33
+
+
+
+1633   
+1634                       ;
+1635   
+1636                       ;------------------------------------------------------------------------
+1637   
+1638   
+1639   
+1640                       ;       Register Addresses Of TIMER0
+1641   
+1642   
+1643   
+1644      FFFF8F           M_TCSR0   EQU     $FFFF8F                           ; TIMER0 Control/Status Register
+1645   
+1646      FFFF8E           M_TLR0    EQU     $FFFF8E                           ; TIMER0 Load Reg
+1647   
+1648      FFFF8D           M_TCPR0   EQU     $FFFF8D                           ; TIMER0 Compare Register
+1649   
+1650      FFFF8C           M_TCR0    EQU     $FFFF8C                           ; TIMER0 Count Register
+1651   
+1652   
+1653   
+1654                       ;       Register Addresses Of TIMER1
+1655   
+1656   
+1657   
+1658      FFFF8B           M_TCSR1   EQU     $FFFF8B                           ; TIMER1 Control/Status Register
+1659   
+1660      FFFF8A           M_TLR1    EQU     $FFFF8A                           ; TIMER1 Load Reg
+1661   
+1662      FFFF89           M_TCPR1   EQU     $FFFF89                           ; TIMER1 Compare Register
+1663   
+1664      FFFF88           M_TCR1    EQU     $FFFF88                           ; TIMER1 Count Register
+1665   
+1666   
+1667   
+1668   
+1669   
+1670                       ;       Register Addresses Of TIMER2
+1671   
+1672   
+1673   
+1674      FFFF87           M_TCSR2   EQU     $FFFF87                           ; TIMER2 Control/Status Register
+1675   
+1676      FFFF86           M_TLR2    EQU     $FFFF86                           ; TIMER2 Load Reg
+1677   
+1678      FFFF85           M_TCPR2   EQU     $FFFF85                           ; TIMER2 Compare Register
+1679   
+1680      FFFF84           M_TCR2    EQU     $FFFF84                           ; TIMER2 Count Register
+1681   
+1682      FFFF83           M_TPLR    EQU     $FFFF83                           ; TIMER Prescaler Load Register
+1683   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 34
+
+
+
+1684      FFFF82           M_TPCR    EQU     $FFFF82                           ; TIMER Prescalar Count Register
+1685   
+1686   
+1687   
+1688                       ;       Timer Control/Status Register Bit Flags
+1689   
+1690   
+1691   
+1692      000000           M_TE      EQU     0                                 ; Timer Enable
+1693   
+1694      000001           M_TOIE    EQU     1                                 ; Timer Overflow Interrupt Enable
+1695   
+1696      000002           M_TCIE    EQU     2                                 ; Timer Compare Interrupt Enable
+1697   
+1698      0000F0           M_TC      EQU     $F0                               ; Timer Control Mask (TC0-TC3)
+1699   
+1700      000008           M_INV     EQU     8                                 ; Inverter Bit
+1701   
+1702      000009           M_TRM     EQU     9                                 ; Timer Restart Mode
+1703   
+1704      00000B           M_DIR     EQU     11                                ; Direction Bit
+1705   
+1706      00000C           M_DI      EQU     12                                ; Data Input
+1707   
+1708      00000D           M_DO      EQU     13                                ; Data Output
+1709   
+1710      00000F           M_PCE     EQU     15                                ; Prescaled Clock Enable
+1711   
+1712      000014           M_TOF     EQU     20                                ; Timer Overflow Flag
+1713   
+1714      000015           M_TCF     EQU     21                                ; Timer Compare Flag
+1715   
+1716   
+1717   
+1718                       ;       Timer Prescaler Register Bit Flags
+1719   
+1720   
+1721   
+1722      600000           M_PS      EQU     $600000                           ; Prescaler Source Mask
+1723   
+1724      000015           M_PS0     EQU     21
+1725   
+1726      000016           M_PS1     EQU     22
+1727   
+1728   
+1729   
+1730                       ;   Timer Control Bits
+1731   
+1732      000004           M_TC0     EQU     4                                 ; Timer Control 0
+1733   
+1734      000005           M_TC1     EQU     5                                 ; Timer Control 1
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  Ioequ.inc  Page 35
+
+
+
+1735   
+1736      000006           M_TC2     EQU     6                                 ; Timer Control 2
+1737   
+1738      000007           M_TC3     EQU     7                                 ; Timer Control 3
+1739   
+1740   
+1741                       ; Port B
+1742      FFFFCF           M_PCRB    EQU     $FFFFCF                           ; Port B Control Register
+1743   
+1744      FFFFCE           M_PRRB    EQU     $FFFFCE                           ; Port B Direction Register
+1745   
+1746      FFFFCD           M_PDRB    EQU     $FFFFCD                           ; Port B GPIO Data Register
+1747   
+1748                                 include "vectors4.inc"
+1749                       ;
+1750                                 page    132,60
+1751                       ;****************************************************************************
+1752                       ;   VECTORS.ASM
+1753                       ;   Vector table for the 56362
+1754                       ;
+1755                       ;   Copyright (c) MOTOROLA 1997
+1756                       ;            Semiconductor Products Sector
+1757                       ;            Digital Signal Processing Division
+1758                       ;
+1759                       ;****************************************************************************
+1760                       ;
+1761      P:000000                   ORG     P:0
+1762   
+1763      P:000000 0AF080  vectors   JMP     START                             ;- Hardware RESET
+                   00004E
+1764   
+1765      P:000002 0C0002            jmp     *
+1766      P:000003 000000            NOP                                       ;- Stack Error
+1767   
+1768      P:000004 0C0004            jmp     *
+1769      P:000005 000000            NOP                                       ;- Illegal Opcode Interrupt
+1770   
+1771      P:000006 0C0006            jmp     *
+1772      P:000007 000000            NOP                                       ;- Debug Request Interrupt
+1773   
+1774      P:000008 0C0008            jmp     *
+1775      P:000009 000000            NOP                                       ;- Trap
+1776   
+1777      P:00000A 0C000A            jmp     *
+1778      P:00000B 000000            NOP                                       ;- NMI
+1779   
+1780      P:00000C 000000            NOP                                       ;- Reserved
+1781      P:00000D 000000            NOP
+1782   
+1783      P:00000E 000000            NOP                                       ;- Reserved
+1784      P:00000F 000000            NOP
+1785   
+1786                       ;ba         jsr       IRQ_A                        ;- IRQA
+1787      P:000010 0C0010            jmp     *
+1788      P:000011 000000            nop
+1789   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  vectors4.inc  Page 36
+
+
+
+1790                       ;ba         jsr       IRQ_B                        ;- IRQB
+1791      P:000012 0C0012            jmp     *
+1792      P:000013 000000            nop
+1793   
+1794                       ;ba         jsr       IRQ_C                        ;- IRQC
+1795      P:000014 0C0014            jmp     *
+1796      P:000015 000000            nop
+1797   
+1798                       ;ba         jsr       IRQ_D                        ;- IRQD
+1799      P:000016 0C0016            jmp     *
+1800      P:000017 000000            nop
+1801   
+1802      P:000018 0C0018            jmp     *
+1803      P:000019 000000            NOP                                       ;- DMA Channel 0
+1804                       ;
+1805      P:00001A 0C001A            jmp     *
+1806      P:00001B 000000            NOP                                       ;- DMA Channel 1
+1807                       ;
+1808      P:00001C 0C001C            jmp     *
+1809      P:00001D 000000            NOP                                       ;- DMA Channel 2
+1810                       ;
+1811      P:00001E 0C001E            jmp     *
+1812      P:00001F 000000            NOP                                       ;- DMA Channel 3
+1813                       ;
+1814      P:000020 0C0020            jmp     *
+1815      P:000021 000000            NOP                                       ;- DMA Channel 4
+1816                       ;
+1817      P:000022 0C0022            jmp     *
+1818      P:000023 000000            NOP                                       ;- DMA Channel 5
+1819                       ;
+1820      P:000024 0C0024            jmp     *                                 ;- reserved
+1821      P:000025 000000            nop
+1822                       ;
+1823      P:000026 0C0026            jmp     *                                 ;- reserved
+1824      P:000027 000000            nop
+1825                       ;
+1826      P:000028 0C0028            jmp     *                                 ;- DAX underrun error
+1827      P:000029 000000            nop
+1828                       ;
+1829      P:00002A 0C002A            jmp     *                                 ;- DAX Block Transferred
+1830      P:00002B 000000            nop
+1831                       ;
+1832      P:00002C 0C002C            jmp     *                                 ;- reserved
+1833      P:00002D 000000            nop
+1834                       ;
+1835      P:00002E 0C002E            jmp     *                                 ;- DAX Audio Data Empty
+1836      P:00002F 000000            nop
+1837                       ;
+1838      P:000030 0BF080            jsr     esai_rx_isr                       ; ESAI Receive data
+                   0000C2
+1839   
+1840      P:000032 0BF080            jsr     esai_rxeven_isr                   ; ESAI Receive data Even Slot (Right Channel)
+                   0000C7
+1843   
+1844      P:000034 0BF080            jsr     esai_rxe_isr                      ;ESAI Receive Data with exception
+                   0000BB
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  vectors4.inc  Page 37
+
+
+
+1845                       ;         jmp    *
+1846                       ;         nop                                     ;MLS 12/20/97
+1847   
+1849      P:000036 0C0036            jmp     *
+1850      P:000037 000000            nop
+1851   
+1853      P:000038 0C0038            jmp     *
+1854      P:000039 000000            nop
+1855   
+1856      P:00003A 0C003A            jmp     *                                 ;ESAI Transmit Even data
+1857      P:00003B 000000            nop
+1858                       ;
+1860      P:00003C 0C003C            jmp     *
+1861      P:00003D 000000            nop                                       ;MLS 12/20/97
+1862   
+1863                       ;
+1865      P:00003E 0C003E            jmp     *
+1866      P:00003F 000000            nop                                       ;MLS 12/20/97
+1867   
+1868                       ;
+1869      P:000040 0C0040            jmp     *                                 ;SHI Transmit Data
+1870      P:000041 000000            nop
+1871                       ;
+1872      P:000042 0C0042            jmp     *                                 ;SHI Transmit Underrun Error
+1873      P:000043 000000            nop
+1874                       ;
+1875      P:000044 0BF080            jsr     shi_receive                       ;SHI Receive FIFO Not Empty
+                   000097
+1878                       ;
+1879      P:000046 000000            NOP                                       ;- Reserved
+1880      P:000047 000000            NOP
+1881   
+1882                       ;
+1884      P:000048 0C0048            jmp     *                                 ;SHI Receive FIFO Full
+1885      P:000049 000000            nop
+1886                       ;
+1887      P:00004A 0C004A            jmp     *                                 ;SHI Receive Overrun Error
+1888      P:00004B 000000            nop
+1889                       ;
+1890      P:00004C 0C004C            jmp     *                                 ;SHI Bus Error
+1891      P:00004D 000000            nop
+1892   
+1893                       ;MoreSpace         NOP                                     ;- Reserved             P:$4E
+1894                       ;MoreSpace         NOP
+1895                       ;MoreSpace;
+1896                       ;MoreSpace         NOP                                     ;- Reserved
+1897                       ;MoreSpace         NOP
+1898                       ;MoreSpace;
+1899                       ;MoreSpace         NOP                                     ;- Reserved
+1900                       ;MoreSpace         NOP
+1901                       ;MoreSpace
+1902                       ;MoreSpace         jmp       *
+1903                       ;MoreSpace         NOP                        ;- Timer 0 Compare
+1904                       ;MoreSpace;
+1905                       ;MoreSpace         jmp       *
+1906                       ;MoreSpace         NOP                        ;- Timer 0 Overflow
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  vectors4.inc  Page 38
+
+
+
+1907                       ;MoreSpace;
+1908                       ;MoreSpace         jmp       *
+1909                       ;MoreSpace         NOP                        ;- Timer 1 Compare
+1910                       ;MoreSpace;
+1911                       ;MoreSpace         jmp       *
+1912                       ;MoreSpace         NOP                        ;- Timer 1 Overflow
+1913                       ;MoreSpace;
+1914                       ;MoreSpace         jmp       *
+1915                       ;MoreSpace         NOP                        ;- Timer 2 Compare
+1916                       ;MoreSpace;
+1917                       ;MoreSpace         jmp       *
+1918                       ;MoreSpace         NOP                        ;- Timer 2 Overflow
+1919                       ;
+1920                                 include "wavetable.inc"
+1921      Y:000100                   org     y:$100
+1922                       ; Begin sin wavetable at y:$100
+1923      Y:000100         S_00      DC      $000000                           ; +0.0000000000
+1924      Y:000101         S_01      DC      $03242B                           ; +0.0245412998
+1925      Y:000102         S_02      DC      $0647D9                           ; +0.0490676016
+1926      Y:000103         S_03      DC      $096A90                           ; +0.0735644996
+1927      Y:000104         S_04      DC      $0C8BD3                           ; +0.0980170965
+1928      Y:000105         S_05      DC      $0FAB27                           ; +0.1224106997
+1929      Y:000106         S_06      DC      $12C810                           ; +0.1467303932
+1930      Y:000107         S_07      DC      $15E214                           ; +0.1709619015
+1931      Y:000108         S_08      DC      $18F8B8                           ; +0.1950902939
+1932      Y:000109         S_09      DC      $1C0B82                           ; +0.2191012055
+1933      Y:00010A         S_0A      DC      $1F19F9                           ; +0.2429800928
+1934      Y:00010B         S_0B      DC      $2223A5                           ; +0.2667128146
+1935      Y:00010C         S_0C      DC      $25280C                           ; +0.2902846038
+1936      Y:00010D         S_0D      DC      $2826B9                           ; +0.3136816919
+1937      Y:00010E         S_0E      DC      $2B1F35                           ; +0.3368898928
+1938      Y:00010F         S_0F      DC      $2E110A                           ; +0.3598949909
+1939      Y:000110         S_10      DC      $30FBC5                           ; +0.3826833963
+1940      Y:000111         S_11      DC      $33DEF3                           ; +0.4052414000
+1941      Y:000112         S_12      DC      $36BA20                           ; +0.4275551140
+1942      Y:000113         S_13      DC      $398CDD                           ; +0.4496113062
+1943      Y:000114         S_14      DC      $3C56BA                           ; +0.4713967144
+1944      Y:000115         S_15      DC      $3F174A                           ; +0.4928981960
+1945      Y:000116         S_16      DC      $41CE1E                           ; +0.5141026974
+1946      Y:000117         S_17      DC      $447ACD                           ; +0.5349975824
+1947      Y:000118         S_18      DC      $471CED                           ; +0.5555701852
+1948      Y:000119         S_19      DC      $49B415                           ; +0.5758082271
+1949      Y:00011A         S_1A      DC      $4C3FE0                           ; +0.5956993103
+1950      Y:00011B         S_1B      DC      $4EBFE9                           ; +0.6152315736
+1951      Y:00011C         S_1C      DC      $5133CD                           ; +0.6343932748
+1952      Y:00011D         S_1D      DC      $539B2B                           ; +0.6531729102
+1953      Y:00011E         S_1E      DC      $55F5A5                           ; +0.6715589762
+1954      Y:00011F         S_1F      DC      $5842DD                           ; +0.6895405054
+1955      Y:000120         S_20      DC      $5A827A                           ; +0.7071068287
+1956      Y:000121         S_21      DC      $5CB421                           ; +0.7242470980
+1957      Y:000122         S_22      DC      $5ED77D                           ; +0.7409511805
+1958      Y:000123         S_23      DC      $60EC38                           ; +0.7572088242
+1959      Y:000124         S_24      DC      $62F202                           ; +0.7730104923
+1960      Y:000125         S_25      DC      $64E889                           ; +0.7883464098
+1961      Y:000126         S_26      DC      $66CF81                           ; +0.8032075167
+1962      Y:000127         S_27      DC      $68A69F                           ; +0.8175848722
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  wavetable.inc  Page 39
+
+
+
+1963      Y:000128         S_28      DC      $6A6D99                           ; +0.8314697146
+1964      Y:000129         S_29      DC      $6C2429                           ; +0.8448535204
+1965      Y:00012A         S_2A      DC      $6DCA0D                           ; +0.8577286005
+1966      Y:00012B         S_2B      DC      $6F5F03                           ; +0.8700870275
+1967      Y:00012C         S_2C      DC      $70E2CC                           ; +0.8819212914
+1968      Y:00012D         S_2D      DC      $72552D                           ; +0.8932244182
+1969      Y:00012E         S_2E      DC      $73B5EC                           ; +0.9039893150
+1970      Y:00012F         S_2F      DC      $7504D3                           ; +0.9142097235
+1971      Y:000130         S_30      DC      $7641AF                           ; +0.9238795042
+1972      Y:000131         S_31      DC      $776C4F                           ; +0.9329928160
+1973      Y:000132         S_32      DC      $788484                           ; +0.9415441155
+1974      Y:000133         S_33      DC      $798A24                           ; +0.9495282173
+1975      Y:000134         S_34      DC      $7A7D05                           ; +0.9569402933
+1976      Y:000135         S_35      DC      $7B5D04                           ; +0.9637761116
+1977      Y:000136         S_36      DC      $7C29FC                           ; +0.9700313210
+1978      Y:000137         S_37      DC      $7CE3CF                           ; +0.9757022262
+1979      Y:000138         S_38      DC      $7D8A5F                           ; +0.9807853103
+1980      Y:000139         S_39      DC      $7E1D94                           ; +0.9852777123
+1981      Y:00013A         S_3A      DC      $7E9D56                           ; +0.9891765118
+1982      Y:00013B         S_3B      DC      $7F0992                           ; +0.9924796224
+1983      Y:00013C         S_3C      DC      $7F6237                           ; +0.9951847792
+1984      Y:00013D         S_3D      DC      $7FA737                           ; +0.9972904921
+1985      Y:00013E         S_3E      DC      $7FD888                           ; +0.9987955093
+1986      Y:00013F         S_3F      DC      $7FF622                           ; +0.9996988773
+1987      Y:000140         S_40      DC      $7FFFFF                           ; +0.9999998808
+1988      Y:000141         S_41      DC      $7FF622                           ; +0.9996988773
+1989      Y:000142         S_42      DC      $7FD888                           ; +0.9987955093
+1990      Y:000143         S_43      DC      $7FA737                           ; +0.9972904921
+1991      Y:000144         S_44      DC      $7F6237                           ; +0.9951847792
+1992      Y:000145         S_45      DC      $7F0992                           ; +0.9924796224
+1993      Y:000146         S_46      DC      $7E9D56                           ; +0.9891765118
+1994      Y:000147         S_47      DC      $7E1D94                           ; +0.9852777123
+1995      Y:000148         S_48      DC      $7D8A5F                           ; +0.9807853103
+1996      Y:000149         S_49      DC      $7CE3CF                           ; +0.9757022262
+1997      Y:00014A         S_4A      DC      $7C29FC                           ; +0.9700313210
+1998      Y:00014B         S_4B      DC      $7B5D04                           ; +0.9637761116
+1999      Y:00014C         S_4C      DC      $7A7D05                           ; +0.9569402933
+2000      Y:00014D         S_4D      DC      $798A24                           ; +0.9495282173
+2001      Y:00014E         S_4E      DC      $788484                           ; +0.9415441155
+2002      Y:00014F         S_4F      DC      $776C4F                           ; +0.9329928160
+2003      Y:000150         S_50      DC      $7641AF                           ; +0.9238795042
+2004      Y:000151         S_51      DC      $7504D3                           ; +0.9142097235
+2005      Y:000152         S_52      DC      $73B5EC                           ; +0.9039893150
+2006      Y:000153         S_53      DC      $72552D                           ; +0.8932244182
+2007      Y:000154         S_54      DC      $70E2CC                           ; +0.8819212914
+2008      Y:000155         S_55      DC      $6F5F03                           ; +0.8700870275
+2009      Y:000156         S_56      DC      $6DCA0D                           ; +0.8577286005
+2010      Y:000157         S_57      DC      $6C2429                           ; +0.8448535204
+2011      Y:000158         S_58      DC      $6A6D99                           ; +0.8314697146
+2012      Y:000159         S_59      DC      $68A69F                           ; +0.8175848722
+2013      Y:00015A         S_5A      DC      $66CF81                           ; +0.8032075167
+2014      Y:00015B         S_5B      DC      $64E889                           ; +0.7883464098
+2015      Y:00015C         S_5C      DC      $62F202                           ; +0.7730104923
+2016      Y:00015D         S_5D      DC      $60EC38                           ; +0.7572088242
+2017      Y:00015E         S_5E      DC      $5ED77D                           ; +0.7409511805
+2018      Y:00015F         S_5F      DC      $5CB421                           ; +0.7242470980
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  wavetable.inc  Page 40
+
+
+
+2019      Y:000160         S_60      DC      $5A827A                           ; +0.7071068287
+2020      Y:000161         S_61      DC      $5842DD                           ; +0.6895405054
+2021      Y:000162         S_62      DC      $55F5A5                           ; +0.6715589762
+2022      Y:000163         S_63      DC      $539B2B                           ; +0.6531729102
+2023      Y:000164         S_64      DC      $5133CD                           ; +0.6343932748
+2024      Y:000165         S_65      DC      $4EBFE9                           ; +0.6152315736
+2025      Y:000166         S_66      DC      $4C3FE0                           ; +0.5956993103
+2026      Y:000167         S_67      DC      $49B415                           ; +0.5758082271
+2027      Y:000168         S_68      DC      $471CED                           ; +0.5555701852
+2028      Y:000169         S_69      DC      $447ACD                           ; +0.5349975824
+2029      Y:00016A         S_6A      DC      $41CE1E                           ; +0.5141026974
+2030      Y:00016B         S_6B      DC      $3F174A                           ; +0.4928981960
+2031      Y:00016C         S_6C      DC      $3C56BA                           ; +0.4713967144
+2032      Y:00016D         S_6D      DC      $398CDD                           ; +0.4496113062
+2033      Y:00016E         S_6E      DC      $36BA20                           ; +0.4275551140
+2034      Y:00016F         S_6F      DC      $33DEF3                           ; +0.4052414000
+2035      Y:000170         S_70      DC      $30FBC5                           ; +0.3826833963
+2036      Y:000171         S_71      DC      $2E110A                           ; +0.3598949909
+2037      Y:000172         S_72      DC      $2B1F35                           ; +0.3368898928
+2038      Y:000173         S_73      DC      $2826B9                           ; +0.3136816919
+2039      Y:000174         S_74      DC      $25280C                           ; +0.2902846038
+2040      Y:000175         S_75      DC      $2223A5                           ; +0.2667128146
+2041      Y:000176         S_76      DC      $1F19F9                           ; +0.2429800928
+2042      Y:000177         S_77      DC      $1C0B82                           ; +0.2191012055
+2043      Y:000178         S_78      DC      $18F8B8                           ; +0.1950902939
+2044      Y:000179         S_79      DC      $15E214                           ; +0.1709619015
+2045      Y:00017A         S_7A      DC      $12C810                           ; +0.1467303932
+2046      Y:00017B         S_7B      DC      $0FAB27                           ; +0.1224106997
+2047      Y:00017C         S_7C      DC      $0C8BD3                           ; +0.0980170965
+2048      Y:00017D         S_7D      DC      $096A90                           ; +0.0735644996
+2049      Y:00017E         S_7E      DC      $0647D9                           ; +0.0490676016
+2050      Y:00017F         S_7F      DC      $03242B                           ; +0.0245412998
+2051      Y:000180         S_80      DC      $000000                           ; +0.0000000000
+2052      Y:000181         S_81      DC      $FCDBD5                           ; -0.0245412998
+2053      Y:000182         S_82      DC      $F9B827                           ; -0.0490676016
+2054      Y:000183         S_83      DC      $F69570                           ; -0.0735644996
+2055      Y:000184         S_84      DC      $F3742D                           ; -0.0980170965
+2056      Y:000185         S_85      DC      $F054D9                           ; -0.1224106997
+2057      Y:000186         S_86      DC      $ED37F0                           ; -0.1467303932
+2058      Y:000187         S_87      DC      $EA1DEC                           ; -0.1709619015
+2059      Y:000188         S_88      DC      $E70748                           ; -0.1950902939
+2060      Y:000189         S_89      DC      $E3F47E                           ; -0.2191012055
+2061      Y:00018A         S_8A      DC      $E0E607                           ; -0.2429800928
+2062      Y:00018B         S_8B      DC      $DDDC5B                           ; -0.2667128146
+2063      Y:00018C         S_8C      DC      $DAD7F4                           ; -0.2902846038
+2064      Y:00018D         S_8D      DC      $D7D947                           ; -0.3136816919
+2065      Y:00018E         S_8E      DC      $D4E0CB                           ; -0.3368898928
+2066      Y:00018F         S_8F      DC      $D1EEF6                           ; -0.3598949909
+2067      Y:000190         S_90      DC      $CF043B                           ; -0.3826833963
+2068      Y:000191         S_91      DC      $CC210D                           ; -0.4052414000
+2069      Y:000192         S_92      DC      $C945E0                           ; -0.4275551140
+2070      Y:000193         S_93      DC      $C67323                           ; -0.4496113062
+2071      Y:000194         S_94      DC      $C3A946                           ; -0.4713967144
+2072      Y:000195         S_95      DC      $C0E8B6                           ; -0.4928981960
+2073      Y:000196         S_96      DC      $BE31E2                           ; -0.5141026974
+2074      Y:000197         S_97      DC      $BB8533                           ; -0.5349975824
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  wavetable.inc  Page 41
+
+
+
+2075      Y:000198         S_98      DC      $B8E313                           ; -0.5555701852
+2076      Y:000199         S_99      DC      $B64BEB                           ; -0.5758082271
+2077      Y:00019A         S_9A      DC      $B3C020                           ; -0.5956993103
+2078      Y:00019B         S_9B      DC      $B14017                           ; -0.6152315736
+2079      Y:00019C         S_9C      DC      $AECC33                           ; -0.6343932748
+2080      Y:00019D         S_9D      DC      $AC64D5                           ; -0.6531729102
+2081      Y:00019E         S_9E      DC      $AA0A5B                           ; -0.6715589762
+2082      Y:00019F         S_9F      DC      $A7BD23                           ; -0.6895405054
+2083      Y:0001A0         S_A0      DC      $A57D86                           ; -0.7071068287
+2084      Y:0001A1         S_A1      DC      $A34BDF                           ; -0.7242470980
+2085      Y:0001A2         S_A2      DC      $A12883                           ; -0.7409511805
+2086      Y:0001A3         S_A3      DC      $9F13C8                           ; -0.7572088242
+2087      Y:0001A4         S_A4      DC      $9D0DFE                           ; -0.7730104923
+2088      Y:0001A5         S_A5      DC      $9B1777                           ; -0.7883464098
+2089      Y:0001A6         S_A6      DC      $99307F                           ; -0.8032075167
+2090      Y:0001A7         S_A7      DC      $975961                           ; -0.8175848722
+2091      Y:0001A8         S_A8      DC      $959267                           ; -0.8314697146
+2092      Y:0001A9         S_A9      DC      $93DBD7                           ; -0.8448535204
+2093      Y:0001AA         S_AA      DC      $9235F3                           ; -0.8577286005
+2094      Y:0001AB         S_AB      DC      $90A0FD                           ; -0.8700870275
+2095      Y:0001AC         S_AC      DC      $8F1D34                           ; -0.8819212914
+2096      Y:0001AD         S_AD      DC      $8DAAD3                           ; -0.8932244182
+2097      Y:0001AE         S_AE      DC      $8C4A14                           ; -0.9039893150
+2098      Y:0001AF         S_AF      DC      $8AFB2D                           ; -0.9142097235
+2099      Y:0001B0         S_B0      DC      $89BE51                           ; -0.9238795042
+2100      Y:0001B1         S_B1      DC      $8893B1                           ; -0.9329928160
+2101      Y:0001B2         S_B2      DC      $877B7C                           ; -0.9415441155
+2102      Y:0001B3         S_B3      DC      $8675DC                           ; -0.9495282173
+2103      Y:0001B4         S_B4      DC      $8582FB                           ; -0.9569402933
+2104      Y:0001B5         S_B5      DC      $84A2FC                           ; -0.9637761116
+2105      Y:0001B6         S_B6      DC      $83D604                           ; -0.9700313210
+2106      Y:0001B7         S_B7      DC      $831C31                           ; -0.9757022262
+2107      Y:0001B8         S_B8      DC      $8275A1                           ; -0.9807853103
+2108      Y:0001B9         S_B9      DC      $81E26C                           ; -0.9852777123
+2109      Y:0001BA         S_BA      DC      $8162AA                           ; -0.9891765118
+2110      Y:0001BB         S_BB      DC      $80F66E                           ; -0.9924796224
+2111      Y:0001BC         S_BC      DC      $809DC9                           ; -0.9951847792
+2112      Y:0001BD         S_BD      DC      $8058C9                           ; -0.9972904921
+2113      Y:0001BE         S_BE      DC      $802778                           ; -0.9987955093
+2114      Y:0001BF         S_BF      DC      $8009DE                           ; -0.9996988773
+2115      Y:0001C0         S_C0      DC      $800000                           ; -1.0000000000
+2116      Y:0001C1         S_C1      DC      $8009DE                           ; -0.9996988773
+2117      Y:0001C2         S_C2      DC      $802778                           ; -0.9987955093
+2118      Y:0001C3         S_C3      DC      $8058C9                           ; -0.9972904921
+2119      Y:0001C4         S_C4      DC      $809DC9                           ; -0.9951847792
+2120      Y:0001C5         S_C5      DC      $80F66E                           ; -0.9924796224
+2121      Y:0001C6         S_C6      DC      $8162AA                           ; -0.9891765118
+2122      Y:0001C7         S_C7      DC      $81E26C                           ; -0.9852777123
+2123      Y:0001C8         S_C8      DC      $8275A1                           ; -0.9807853103
+2124      Y:0001C9         S_C9      DC      $831C31                           ; -0.9757022262
+2125      Y:0001CA         S_CA      DC      $83D604                           ; -0.9700313210
+2126      Y:0001CB         S_CB      DC      $84A2FC                           ; -0.9637761116
+2127      Y:0001CC         S_CC      DC      $8582FB                           ; -0.9569402933
+2128      Y:0001CD         S_CD      DC      $8675DC                           ; -0.9495282173
+2129      Y:0001CE         S_CE      DC      $877B7C                           ; -0.9415441155
+2130      Y:0001CF         S_CF      DC      $8893B1                           ; -0.9329928160
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  wavetable.inc  Page 42
+
+
+
+2131      Y:0001D0         S_D0      DC      $89BE51                           ; -0.9238795042
+2132      Y:0001D1         S_D1      DC      $8AFB2D                           ; -0.9142097235
+2133      Y:0001D2         S_D2      DC      $8C4A14                           ; -0.9039893150
+2134      Y:0001D3         S_D3      DC      $8DAAD3                           ; -0.8932244182
+2135      Y:0001D4         S_D4      DC      $8F1D34                           ; -0.8819212914
+2136      Y:0001D5         S_D5      DC      $90A0FD                           ; -0.8700870275
+2137      Y:0001D6         S_D6      DC      $9235F3                           ; -0.8577286005
+2138      Y:0001D7         S_D7      DC      $93DBD7                           ; -0.8448535204
+2139      Y:0001D8         S_D8      DC      $959267                           ; -0.8314697146
+2140      Y:0001D9         S_D9      DC      $975961                           ; -0.8175848722
+2141      Y:0001DA         S_DA      DC      $99307F                           ; -0.8032075167
+2142      Y:0001DB         S_DB      DC      $9B1777                           ; -0.7883464098
+2143      Y:0001DC         S_DC      DC      $9D0DFE                           ; -0.7730104923
+2144      Y:0001DD         S_DD      DC      $9F13C8                           ; -0.7572088242
+2145      Y:0001DE         S_DE      DC      $A12883                           ; -0.7409511805
+2146      Y:0001DF         S_DF      DC      $A34BDF                           ; -0.7242470980
+2147      Y:0001E0         S_E0      DC      $A57D86                           ; -0.7071068287
+2148      Y:0001E1         S_E1      DC      $A7BD23                           ; -0.6895405054
+2149      Y:0001E2         S_E2      DC      $AA0A5B                           ; -0.6715589762
+2150      Y:0001E3         S_E3      DC      $AC64D5                           ; -0.6531729102
+2151      Y:0001E4         S_E4      DC      $AECC33                           ; -0.6343932748
+2152      Y:0001E5         S_E5      DC      $B14017                           ; -0.6152315736
+2153      Y:0001E6         S_E6      DC      $B3C020                           ; -0.5956993103
+2154      Y:0001E7         S_E7      DC      $B64BEB                           ; -0.5758082271
+2155      Y:0001E8         S_E8      DC      $B8E313                           ; -0.5555701852
+2156      Y:0001E9         S_E9      DC      $BB8533                           ; -0.5349975824
+2157      Y:0001EA         S_EA      DC      $BE31E2                           ; -0.5141026974
+2158      Y:0001EB         S_EB      DC      $C0E8B6                           ; -0.4928981960
+2159      Y:0001EC         S_EC      DC      $C3A946                           ; -0.4713967144
+2160      Y:0001ED         S_ED      DC      $C67323                           ; -0.4496113062
+2161      Y:0001EE         S_EE      DC      $C945E0                           ; -0.4275551140
+2162      Y:0001EF         S_EF      DC      $CC210D                           ; -0.4052414000
+2163      Y:0001F0         S_F0      DC      $CF043B                           ; -0.3826833963
+2164      Y:0001F1         S_F1      DC      $D1EEF6                           ; -0.3598949909
+2165      Y:0001F2         S_F2      DC      $D4E0CB                           ; -0.3368898928
+2166      Y:0001F3         S_F3      DC      $D7D947                           ; -0.3136816919
+2167      Y:0001F4         S_F4      DC      $DAD7F4                           ; -0.2902846038
+2168      Y:0001F5         S_F5      DC      $DDDC5B                           ; -0.2667128146
+2169      Y:0001F6         S_F6      DC      $E0E607                           ; -0.2429800928
+2170      Y:0001F7         S_F7      DC      $E3F47E                           ; -0.2191012055
+2171      Y:0001F8         S_F8      DC      $E70748                           ; -0.1950902939
+2172      Y:0001F9         S_F9      DC      $EA1DEC                           ; -0.1709619015
+2173      Y:0001FA         S_FA      DC      $ED37F0                           ; -0.1467303932
+2174      Y:0001FB         S_FB      DC      $F054D9                           ; -0.1224106997
+2175      Y:0001FC         S_FC      DC      $F3742D                           ; -0.0980170965
+2176      Y:0001FD         S_FD      DC      $F69570                           ; -0.0735644996
+2177      Y:0001FE         S_FE      DC      $F9B827                           ; -0.0490676016
+2178      Y:0001FF         S_FF      DC      $FCDBD5                           ; -0.0245412998
+2180   
+2181                       ;---------------------------------------------------------------------------------------------------
+2182                       ;   FilterExample.asm
+2183                       ;       This file is setup to work with the Line 6 / Freescale Tone Core Developer's Kit.
+2184                       ;       It is a simple 2 band stereo EQ with control over filter type, frequency, bandwidth
+2185                       ;       and shelving level for each band.
+2186                       ;
+2187                       ;   Line 6,  November 30, 2007
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 43
+
+
+
+2188                       ;               Copyright (c) 2008 Line 6 Inc
+2189                       ;               Line 6 Confidential Information
+2190                       ;
+2191                       ;---------------------------------------------------------------------------------------------------
+2192                       ;    Services performed by LINE 6 in this matter are performed AS IS and without any warranty.
+2193                       ;    CUSTOMER retains the final decision relative to the total design and functionality of the
+2194                       ;    end product. LINE 6 neither guarantees nor will be held liable by CUSTOMER for the
+2195                       ;    success of this project. LINE 6 disclaims all warranties, express, implied or statutory
+2196                       ;    including, but not limited to, implied warranty of merchantability or fitness for a
+2197                       ;    particular purpose on any hardware, software ore advise supplied to the project by LINE 6,
+2198                       ;    and or any product resulting from LINE 6 services . In no event shall LINE 6 be
+2199                       ;    liable for incidental or consequential damages arising out of this agreement. CUSTOMER
+2200                       ;    agrees to hold LINE 6 harmless against any and all claims demands or actions by anyone
+2201                       ;    on account of any damage, or injury, whether commercial, contractual, or tortuous, rising
+2202                       ;    directly or indirectly as a result of the advise or assistance supplied CUSTOMER in
+2203                       ;    connection with product, services or goods supplied under this Agreement.
+2204                       ;---------------------------------------------------------------------------------------------------
+2205   
+2206      X:000000                   org     x:$000
+2207                       ;...Knob registers expect a value of 0x000000 thru 0x7FFFFF from the microcontroller
+2208      X:000000         Knob_1    ds      1                                 ; 00h
+2209      X:000001         Knob_2    ds      1                                 ; 01h
+2210      X:000002         Knob_3    ds      1                                 ; 02h
+2211      X:000003         Knob_4    ds      1                                 ; 03h
+2212      X:000004         Knob_5    ds      1                                 ; 04h
+2213      X:000005         Knob_6    ds      1                                 ; 05h
+2214   
+2215                       ;...Switch registers expect a value of 0,1, or 2 from the microcontroller
+2216      X:000006         Switch_1  ds      1                                 ; 06h
+2217      X:000007         Switch_2  ds      1                                 ; 07h
+2218   
+2219                       ;...FootSwitch registers expect a value of 0x000000 or 0x000001 from the microcontroller
+2220                       FootSwitch_TopLayer
+2221      X:000008                   ds      1                                 ; 08h
+2222                       FootSwitch_BottomLayer
+2223      X:000009                   ds      1                                 ; 09h
+2224   
+2225                       ;...LED registers are read by the micro and should be set to 0x000000 or 0x000001  (off and on)
+2226      X:00000A         LED_Red   ds      1                                 ; 0ah
+2227      X:00000B         LED_Green ds      1                                 ; 0bh
+2228   
+2229                       ;...RX and TX registers
+2230      X:00000C         LeftRx    ds      1                                 ; 0ch   Left received sample
+2231      X:00000D         RightRx   ds      1                                 ; 0dh   Right received sample
+2232      X:00000E         LeftTx    ds      1                                 ; 0eh   Left sample to transmit
+2233      X:00000F         RightTx   ds      1                                 ; 0fh   Right sample to transmit
+2234                       SHI_StateMachine
+2235      X:000010                   ds      1                                 ; 10h   current state of the serial host interface
+2236                       HostCommand
+2237      X:000011                   ds      1                                 ; 11h   current SHI command
+2238   
+2239                       ;...Debug registers
+2240                       Debug_Write_to_DSP_1
+2241      X:000012                   ds      1                                 ; 12h   recieves data from the ToneCoreGUI applicatio
+n
+2242                       Debug_Write_to_DSP_2
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 44
+
+
+
+2243      X:000013                   ds      1                                 ; 13h   recieves data from the ToneCoreGUI applicatio
+n
+2244                       Debug_Write_to_DSP_3
+2245      X:000014                   ds      1                                 ; 14h   recieves data from the ToneCoreGUI applicatio
+n
+2246                       Debug_Write_to_DSP_4
+2247      X:000015                   ds      1                                 ; 15h   recieves data from the ToneCoreGUI applicatio
+n
+2248                       Debug_Read_from_DSP_1
+2249      X:000016                   ds      1                                 ; 16h   send data to the ToneCoreGUI application
+2250                       Debug_Read_from_DSP_2
+2251      X:000017                   ds      1                                 ; 17h   send data to the ToneCoreGUI application
+2252                       Debug_Read_from_DSP_3
+2253      X:000018                   ds      1                                 ; 18h   send data to the ToneCoreGUI application
+2254                       Debug_Read_from_DSP_4
+2255      X:000019                   ds      1                                 ; 19h   send data to the ToneCoreGUI application
+2256   
+2257   
+2258                       ;...The following registers are used to store filter coefficients
+2259      X:00001A         Filter_1_K ds     1                                 ; 1ah
+2260      X:00001B         Filter_1_Q ds     1                                 ; 1bh
+2261                       Filter_1_Shelve
+2262      X:00001C                   ds      1                                 ; 1ch
+2263   
+2264      X:00001D         Filter_2_K ds     1                                 ; 1dh
+2265      X:00001E         Filter_2_Q ds     1                                 ; 1eh
+2266                       Filter_2_Shelve
+2267      X:00001F                   ds      1                                 ; 1fh
+2268   
+2269      X:000020         FootLatch ds      1                                 ; 20h
+2270                       FootLatchMem
+2271      X:000021                   ds      1                                 ; 21h
+2272   
+2273   
+2274      Y:000000                   org     y:$000
+2275                       ;...copy of current input and output samples
+2276      Y:000000         LeftInput ds      1                                 ; 00h
+2277      Y:000001         LeftOutput ds     1                                 ; 01h
+2278      Y:000002         RightInput ds     1                                 ; 02h
+2279                       RightOutput
+2280      Y:000003                   ds      1                                 ; 03h
+2281   
+2282   
+2283                       ;...Filter memory
+2284                       Filter_1_A_Left
+2285      Y:000004                   ds      1                                 ; 04h
+2286                       Filter_1_Y_Left
+2287      Y:000005                   ds      1                                 ; 05h
+2288   
+2289                       Filter_2_A_Left
+2290      Y:000006                   ds      1                                 ; 06h
+2291                       Filter_2_Y_Left
+2292      Y:000007                   ds      1                                 ; 07h
+2293   
+2294                       Filter_1_A_Right
+2295      Y:000008                   ds      1                                 ; 08h
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 45
+
+
+
+2296                       Filter_1_Y_Right
+2297      Y:000009                   ds      1                                 ; 09h
+2298   
+2299                       Filter_2_A_Right
+2300      Y:00000A                   ds      1                                 ; 0ah
+2301                       Filter_2_Y_Right
+2302      Y:00000B                   ds      1                                 ; 0bh
+2303   
+2304   
+2305                       ;**************************************************************************
+2306   
+2307      P:00004E                   org     p:$4E
+2308                       START
+2309      P:00004E 0003F8            ori     #$03,mr                           ; mask interrupts
+2310      P:00004F 08F4BD            movep             #$2D0063,X:M_PCTL       ; Set PLL Control Register
+                   2D0063
+2311                                                                           ; Fosc = 100 MHz = (100)(3 MHz)/3
+2312   
+2313      P:000051 0AFA6E            bset    #14,omr                           ; allow address attributes line to function independe
+ntly
+2314   
+2315      P:000052 07F434            movep             #>$000040,x:M_SAICR     ; 4x4 Synchronous mode (use TX frame and bit clks)
+                   000040
+2316   
+2317      P:000054 07F436            movep             #$FCC304,x:M_TCCR
+                   FCC304
+2318                                                                           ;THCKD -1- HCKT is an output                         
+ (bit  23)
+2319                                                                           ;TFSD  -1- FST is output                             
+ (bit  22)
+2320                                                                           ;TCKD  -1- internal clock source drives SCKT         
+ (bit  21)
+2321                                                                           ;THCKP -1- Transmitter High Freq Clock Polarity      
+ (bit  20)
+2322                                                                           ;TFSP  -1- negative FST polarity                     
+ (bit  19)
+2323                                                                           ;TCKP  -1- data & FST clocked out on falling edge    
+ (bit  18)
+2324                                                                           ;TFP   -3- TFP3..0 = Divide by 4                     
+ (bits 17:14)
+2325                                                                           ;TDC   -1- 2 words per frame                         
+ (bits 13:9)
+2326                                                                           ;TPSR  -1- Bypass Fixed /8 Prescaler                 
+ (bit  8)
+2327                                                                           ;TPM   -4- TPM7-0 = Divide by 5                      
+ (bits 7:0)
+2328   
+2329      P:000056 07F438            movep             #$FCC304,x:M_RCCR
+                   FCC304
+2330                                                                           ;RHCKD -1- HCKR is an output  Flag 2                 
+ (bit  23)
+2331                                                                           ;RFSD  -1- FSR is output      Flag 1                 
+ (bit  22)
+2332                                                                           ;RCKD  -1- SCKR is output     Flag 0                 
+ (bit  21)
+2333                                                                           ;RHCKP -1- Pos. High Freq Clock Polarity             
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 46
+
+
+
+ (bit  20)
+2334                                                                           ;RFSP  -1- negative FSR polarity                     
+ (bit  19)
+2335                                                                           ;RCKP  -1- data & FSR clocked in on falling edge     
+ (bit  18)
+2336                                                                           ;RFP   -3- RFP3..0 = Divide by 4                     
+ (bits 17:14)
+2337                                                                           ;RDC   -1- 2 words per frame                         
+ (bit  13:9)
+2338                                                                           ;RPSR  -1- Bypass Fixed /8 Prescaler                 
+ (bit  8)
+2339                                                                           ;RPM   -4- RPM7-0 = Divide by 5                      
+ (bits 7:0)
+2340   
+2341      P:000058 07F437            movep             #$707d00,x:M_RCR
+                   707D00
+2342                                                                           ;RE    --- RX0, RX1, RX2, RX3 disabled               
+ (bit3:0=0000)
+2343                                                                           ;RSHFD -0- MSB shifted first                         
+ (bit6=0)
+2344                                                                           ;RWA   -0- word left-aligned                         
+ (bit7=0)
+2345                                                                           ;RMOD  -1- network mode                              
+ (bit9:8=01)
+2346                                                                           ;RSWS  1F- 32-bit slot length, 24-bit word length    
+ (bit14:10=11111)
+2347                                                                           ;RFSL  -0- word-length frame sync                    
+ (bit15=0)
+2348                                                                           ;RFSR  -0- frame sync occurs 1 clock cycle earlier   
+ (bit16=1)
+2349                                                                           ;          reserved                                  
+ (bit18:17=00)
+2350                                                                           ;RPR   ?-0- transmit normally, not personal reset    
+  (bit19=0)
+2351                                                                           ;          RIE, REDIE, REIE enabled                  
+(bit23:20=0111)
+2352                                                                           ;RLIE  --- bit23 RLIE
+2353                                                                           ;RIE   --- bit22 RIE
+2354                                                                           ;REDIE --- bit21 REDIE
+2355                                                                           ;REIE  --- bit20 REIE
+2356   
+2357      P:00005A 07F435            movep             #$027D80,x:M_TCR
+                   027D80
+2358                                                                           ;TE    --- Start w/ TX0-TX5 disabled                 
+ (bit5:0=000000)
+2359                                                                           ;TSHFD -0- MSB shifted first                         
+ (bit6=0)
+2360                                                                           ;TWA   -1- word left-aligned                         
+ (bit7=0)
+2361                                                                           ;TMOD  -1- network mode                              
+ (bit9:8=01)
+2362                                                                           ;TSWS  1F- 32-bit slot length, 24-bit word length    
+ (bit14:10=11111)
+2363                                                                           ;TFSL  -0- word length frame sync                    
+ (bit15=0)
+2364                                                                           ;TFSR  -0- frame sync occurs 1 clock cycle earlier   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 47
+
+
+
+ (bit16=1)
+2365                                                                           ;PADC  -1- zero padding enabled                      
+ (bit17=1)
+2366                                                                           ;          reserved                                  
+ (bit18)
+2367                                                                           ;TRP   ?-0- transmit normally, not personal reset    
+  (bit19=0)
+2368                                                                           ;          TLIE, TIE, TEIE disabled                  
+ (bit23:20=0000)
+2369                                                                           ;TLIE  --- bit23 TLIE
+2370                                                                           ;TIE   --- bit22 TIE
+2371                                                                           ;TEDIE --- bit21 TEDIE
+2372                                                                           ;TEIE  --- bit20 TEIE
+2373   
+2374   
+2375      P:00005C 07F43D            movep             #>$000000,x:M_PDRC      ; Clear Port C data
+                   000000
+2376      P:00005E 07F43F            movep             #>$000BF8,x:M_PCRC      ; Set appropriate Port C GPIO pins for ESAI .
+                   000BF8
+2377      P:000060 07F43E            movep             #>$000C7E,x:M_PRRC      ; Set pin direction of PORT C
+                   000C7E
+2378                                                                           ;sdo0     sdo1         sdo2         sdo3    sdo4    s
+do5        hckt        fst         sckt    hckr            fsr         sckr
+2379                                                                           ;ESAI     GPO          GPI          GPI     GPI     E
+SAI        ESAI        ESAI        ESAI    GPO             GPO         NC
+2380                                                                           ;DAC Data Inhibit IRQA Stereo/Mono  A_In    B_In    A
+DC_Data    256FS_CLK0  FS_CLK  64FS_CLK    Gain Switching  Codec_Reset SS_Module
+2381   
+2382   
+2383      P:000062 08F48F            movep             #>$000000,x:M_PCRB      ; Set up Port B for output
+                   000000
+2384      P:000064 08F48E            movep             #>$00000F,x:M_PRRB      ; Set up Port B for output
+                   00000F
+2385      P:000066 08F48D            movep             #>$000008,x:M_PDRB      ; bit 0 = In_EMPH
+                   000008
+2386                                                                           ; bit 1 = OUT_DE_EMPH
+2387                                                                           ; bit 2 = DIRECT_ON
+2388                                                                           ; bit 3 = FX_ON
+2389   
+2390      P:000068 07F43B            movep             #>$000003,x:M_RSMA      ; Enable first 2 time slots for receive.
+                   000003
+2391      P:00006A 07F43C            movep             #>$000000,x:M_RSMB      ;
+                   000000
+2392      P:00006C 07F439            movep             #>$000003,x:M_TSMA      ; Enable first 2 time slots for transmit.
+                   000003
+2393      P:00006E 07F43A            movep             #>$000000,x:M_TSMB
+                   000000
+2394      P:000070 07F420            movep             #>$000000,x:M_TX0       ; zero out transmitter 0
+                   000000
+2395   
+2396                                                                           ;ENABLE ESAI
+2397      P:000072 013720            bset    #0,x:M_RCR                        ; now enable RX0
+2398      P:000073 013520            bset    #0,x:M_TCR                        ; now enable TX0
+2399   
+2400                       ;...Setup Expansion Port A for SRAM...
+2401      P:000074 08F4B9            movep             #$2406B5,x:M_AAR0
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 48
+
+
+
+                   2406B5
+2402                                                                           ; [23:12] = 0x240 Address used to assert chip select
+2403                                                                           ; [11:8]  = 0110  Number of address bits to compare =
+ 6
+2404                                                                           ; [7]     = 1     Bit Packing Enabled
+2405                                                                           ; [6]     = 0     Address Mux Disabled
+2406                                                                           ; [5]     = 1     Y Space Enabled
+2407                                                                           ; [4]     = 1     X Space Enabled
+2408                                                                           ; [3]     = 0     P Space Disabled
+2409                                                                           ; [2]     = 1     Active High for Address Line
+2410                                                                           ; [1:0]   = 01    SRAM Mode
+2411   
+2412      P:000076 08F4B8            movep             #$2003B1,x:M_AAR1
+                   2003B1
+2413                                                                           ; [23:12] = 0x200 Address used to assert chip select
+2414                                                                           ; [11:8]  = 0011  Number of address bits to compare =
+ 3
+2415                                                                           ; [7]     = 1     Bit Packing Enabled
+2416                                                                           ; [6]     = 0     Address Mux Disabled
+2417                                                                           ; [5]     = 1     Y Space Enabled
+2418                                                                           ; [4]     = 1     X Space Enabled
+2419                                                                           ; [3]     = 0     P Space Disabled
+2420                                                                           ; [2]     = 0     Active Low for Chip Select
+2421                                                                           ; [1:0]   = 01    SRAM Mode
+2422   
+2423   
+2424                       ;...Bus Control Register for SRAM...
+2425      P:000078 08F4BB            movep             #$0124A5,x:M_BCR        ;        0001 0010 0100 0110 0011
+                   0124A5
+2426                                                                           ;bus request hold off           (bit23=0)
+2427                                                                           ;bus lock hold off              (bit22=0)
+2428                                                                           ;bus state                      (bit21=0)
+2429                                                                           ;default area wait states       (bit20:16=00001)
+2430                                                                           ;area 3 wait states             (bit15:13=001)
+2431                                                                           ;area 2 wait states             (bit12:10=001)
+2432                                                                           ;area 1 wait states             (bit9:5=00011)
+2433                                                                           ;area 0 wait states             (bit4:0=00011)
+2434   
+2435   
+2436                       ;...Set up SHI (Serial Host Interface to the MCU)...
+2437      P:00007A 07F410            movep             #>$003001,x:M_HCKR      ; Turn Data/Clk Line Filter to max, wide spike tolera
+nce (100ns glitch)
+                   003001
+2438                                                                           ; CPHA=1, CPOL=0 : => same as reset/power-on.
+2439      P:00007C 07F411            movep             #>$001189,x:M_HCSR      ;
+                   001189
+2440   
+2441                       ;...Initialize registers
+2442      P:00007E 44F400            move              #>$000000,x0
+                   000000
+2443      P:000080 209000            move              x0,r0
+2444      P:000081 061AA0            rep     #26
+2445      P:000082 445800            move              x0,x:(r0)+              ; clear start of x:mem
+2446   
+2447      P:000083 44F400            move              #>$400000,x0            ; Intialize the knob registers
+                   400000
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 49
+
+
+
+2448      P:000085 440000            move              x0,x:Knob_1
+2449      P:000086 440100            move              x0,x:Knob_2
+2450      P:000087 440200            move              x0,x:Knob_3
+2451      P:000088 440300            move              x0,x:Knob_4
+2452      P:000089 440400            move              x0,x:Knob_5
+2453      P:00008A 440500            move              x0,x:Knob_6
+2454   
+2455      P:00008B 44F400            move              #>$000000,x0
+                   000000
+2456      P:00008D 05F425            move              #$00ffff,m5             ; Use r5 for the MCU parameter updates.
+                   00FFFF
+2457      P:00008F 04C493            movep             x0,x:M_HTX              ; Assert HREQ* pin for the MCU.
+2458   
+2459   
+2460                       ;...Initialize Peripheral Interrupt Priority Register for Audio Interrupts and SHI.
+2461      P:000090 08F4BE            movep             #$000007,x:M_IPRP       ; ESAI int's enabled and top Priority
+                   000007
+2462                                                                           ; SHI int's enabled and lowest Priority.
+2463   
+2464      P:000092 00FCB8            andi    #$FC,mr                           ;enable all interrupt levels
+2465                                                                           ;clear scaling bits
+2466   
+2467      P:000093 07F43D            movep             #>$000002,x:M_PDRC      ; Take CODEC out of power down mode.
+                   000002
+2468   
+2469   
+2470                       ;------------------------------------------------------------
+2471                       ; Main loop
+2472                       ;------------------------------------------------------------
+2473                       LOOP
+2474      P:000095 000086            wait
+2475      P:000096 0C0095            jmp     LOOP
+2476   
+2477   
+2478   
+2479   
+2480                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2481                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2482                       ;   4x4 Interrupt Service Routines
+2483                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2484                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2485   
+2486   
+2487   
+2488                       ;-----------------------------
+2489                       ; Host Interrupt
+2490                       ;-----------------------------
+2491   
+2492                       shi_receive
+2493      P:000097 077014            movep             x:M_HRX,x:HostCommand   ; Get word from 8031.
+                   000011
+2494      P:000099 07F413            movep             #000000,x:M_HTX         ; Assert HREQ* pin for 8031.
+                   000000
+2495      P:00009B 0B1120            btst    #0,x:HostCommand                  ; $000001 = Write 1 DSP word to X:mem.
+2496      P:00009C 0D1048            bcs     DoWriteCommand                    ;
+                   000005
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 50
+
+
+
+2497      P:00009E 0B1123            btst    #3,x:HostCommand                  ; $000008 = Send word to the 8031.
+2498      P:00009F 0D1048            bcs     DoReadCommand                     ;
+                   00000D
+2499   
+2500                       DoWriteCommand
+2501      P:0000A1 019191            jclr    #M_HRNE,x:M_HCSR,*                ; Wait for address.
+                   0000A1
+2502      P:0000A3 045594            movep             x:M_HRX,r5              ; Store address to write to.
+2503      P:0000A4 07F413            movep             #>000000,x:M_HTX        ; Assert HREQ* pin for 8031.
+                   000000
+2504   
+2505      P:0000A6 019191            jclr    #M_HRNE,x:M_HCSR,*                ; Wait for data
+                   0000A6
+2506      P:0000A8 076514            movep             x:M_HRX,x:(r5)          ; Write data.
+2507      P:0000A9 07F413            movep             #000000,x:M_HTX         ; Assert HREQ* pin for 8031.
+                   000000
+2508      P:0000AB 000004            rti
+2509   
+2510                       DoReadCommand
+2511      P:0000AC 019191            jclr    #M_HRNE,x:M_HCSR,*
+                   0000AC
+2512      P:0000AE 045594            movep             x:M_HRX,r5              ; Store Address to read from
+2513      P:0000AF 07F413            movep             #>000000,x:M_HTX
+                   000000
+2514   
+2515      P:0000B1 019191            jclr    #M_HRNE,x:M_HCSR,*
+                   0000B1
+2516      P:0000B3 045D94            movep             x:M_HRX,n5
+**** 2517 [tremolo.asm 319]: WARNING --- Pipeline stall reading register written in instruction at address: P:0000B3 (X data move fi
+eld)
+2517      P:0000B4 07E513            movep             x:(r5),x:<<M_HTX        ; Send Data at specified address to the 8031
+2518   
+2519      P:0000B5 019191            jclr    #M_HRNE,x:M_HCSR,*
+                   0000B5
+2520      P:0000B7 045D94            movep             x:M_HRX,n5
+2521      P:0000B8 07F413            movep             #>000000,x:<<M_HTX
+                   000000
+2522      P:0000BA 000004            rti
+2523   
+2524   
+2525                       ;-----------------------------
+2526                       ; Receive Exception Interrupt
+2527                       ;-----------------------------
+2528                       esai_rxe_isr                                        ; ESAI RECEIVE ISR
+2529   
+2530      P:0000BB 013307            bclr    #7,x:M_SAISR                      ; Read SAISR to clear receive
+2531                                                                           ; overrun error flag
+2532      P:0000BC 01330E            bclr    #14,x:M_SAISR                     ; Read SAISR to clear transmit
+2533                                                                           ; underrun error flag
+2534      P:0000BD 077028            movep             x:M_RX0,x:RightRx       ;
+                   00000D
+2535      P:0000BF 07F020            movep             x:RightTx,x:M_TX0       ;
+                   00000F
+2536   
+2537      P:0000C1 000004            rti
+2538   
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 51
+
+
+
+2539   
+2540   
+2541                       ;-----------------------------
+2542                       ; Receive Interrupt
+2543                       ;-----------------------------
+2544                       esai_rx_isr
+2545      P:0000C2 077028            movep             x:M_RX0,x:RightRx
+                   00000D
+2546      P:0000C4 07F020            movep             x:RightTx,x:M_TX0
+                   00000F
+2547      P:0000C6 000004            rti
+2548   
+2549   
+2550                       ;-----------------------------
+2551                       ; Receive Even Slot Interrupt
+2552                       ;-----------------------------
+2553   
+2554                       esai_rxeven_isr
+2555      P:0000C7 077028            movep             x:M_RX0,x:LeftRx
+                   00000C
+2556      P:0000C9 07F020            movep             x:LeftTx,x:M_TX0
+                   00000E
+2557   
+2558                                                                           ;Process the scaling of knob values to generate coeff
+icients
+2559                                                                           ;   This is being called per sample, but could be don
+e at a
+2560                                                                           ;   slower rate if bandwidth is needed
+2561                                                                           ;   bsr     Generate_Coeffs
+2562   
+2563      P:0000CB 4C8100            move                          y:LeftOutput,x0 ;
+2564      P:0000CC 440E00            move              x0,x:LeftTx             ; Transmit the output from the last sample period.
+2565      P:0000CD 4C8300            move                          y:RightOutput,x0 ;
+2566      P:0000CE 440F00            move              x0,x:RightTx            ; Transmit the output from the last sample period.
+2567   
+2568      P:0000CF 568C00            move              x:LeftRx,a              ; receive left
+2569      P:0000D0 578D00            move              x:RightRx,b             ; receive right
+2570   
+2571      P:0000D1 5E0000            move                          a,y:LeftInput ; Save Current Left  input sample
+2572      P:0000D2 5F0200            move                          b,y:RightInput ; Save Current Right input sample
+2573   
+2574                                                                           ;Note: r5 and n5 are currently reserved for Host Inte
+rrupts
+2575   
+2576                                                                           ;Process Left Channel   (left input sample is in a)
+2577      P:0000D3 66F400            move              #>Switch_1,r6           ; point to x:mem (switch states)
+                   000006
+2578      P:0000D5 64F400            move              #>Filter_1_K,r4         ; point to x:mem (coefficients)
+                   00001A
+2579      P:0000D7 63F400            move              #>Filter_1_A_Left,r3    ; point to y:mem (filter mem)
+                   000004
+2580      P:0000D9 0D1080            bsr     tremolo                           ; input in a, output in a
+                   00001E
+2581      P:0000DB 5E0100            move                          a,y:LeftOutput
+2582   
+2583                                                                           ;Process Right Channel  (r6 is currently pointing to 
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 52
+
+
+
+Switch 1)
+2584      P:0000DC 5E8200            move                          y:RightInput,a ; load right input sample in a
+2585      P:0000DD 64F400            move              #>Filter_1_K,r4         ; point to x:mem (coefficients)
+                   00001A
+2586      P:0000DF 63F400            move              #>Filter_1_A_Right,r3   ; point to y:mem (filter mem)
+                   000008
+2587      P:0000E1 0D1080            bsr     tremolo                           ; input in a, output in a
+                   000016
+2588      P:0000E3 5E0300            move                          a,y:RightOutput
+2589   
+2590                                                                           ;Use Bottom layer of FootSwitch to turn on/off analog
+ bypass
+2591                                                                           ;   take the momentary footswitch signal (pulse) and 
+generate a latched (step) control signal
+2592      P:0000E4 568900            move              x:FootSwitch_BottomLayer,a ; load unmodified footswitch input
+2593      P:0000E5 458900            move              x:FootSwitch_BottomLayer,x1 ; load unmodified footswitch input
+2594      P:0000E6 44A117            not     a         x:FootLatchMem,x0       ; not a  (also, load the previous momentary signal in
+to x0)
+2595      P:0000E7 452146            and     x0,a      x1,x:FootLatchMem       ; x0 & a (also, store current momentary signal for ne
+xt iteration)
+2596      P:0000E8 44A000            move              x:FootLatch,x0          ; load previous latched value
+2597      P:0000E9 200043            eor     x0,a                              ; generate current latched (step) control signal
+**** 2598 [tremolo.asm 400]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2598      P:0000EA 542000            move              a1,x:FootLatch          ; store latched footswitch signal created from moment
+ary footswitch
+2599   
+2600      P:0000EB 56A000            move              x:FootLatch,a           ; load latching footswitch signal
+**** 2601 [tremolo.asm 403]: WARNING --- Pipeline stall reading register written in previous instruction
+2601      P:0000EC 0ACE00            jclr    #0,a,ANALOG_BYPASS                ; bit clear = bypass
+                   0000F3
+2602      P:0000EE 08F48D            movep             #>$000008,x:M_PDRB      ; bit 3 on  = FX_ON
+                   000008
+2603      P:0000F0 0A0B20            bset    #0,x:LED_Green                    ; turn led on to indicate effect on
+2604      P:0000F1 0AF080            jmp     END_ANALOG_BYPASS
+                   0000F6
+2605                       ANALOG_BYPASS:
+2606      P:0000F3 08F48D            movep             #>$000004,x:M_PDRB      ; bit 2 on  = DIRECT_ON
+                   000004
+2607      P:0000F5 0A0B00            bclr    #0,x:LED_Green                    ; turn led off to indicate effect off
+2608                       END_ANALOG_BYPASS:
+2609   
+2610      P:0000F6 000004            rti                                       ; return from interrupt
+2611   
+2612                                                                           ;Notes: The DSP path has a +3dB of gain applied in an
+alog at the DSP output;
+2613                                                                           ;       this gain was intended for cases where more o
+utput headroom was needed.
+2614                                                                           ;       I am not normalizing for this output gain in 
+this example code.
+2615                                                                           ;
+2616                                                                           ;       Port C contains sense lines for the input and
+ output.  You may
+2617                                                                           ;       use these to alter your algorithms to behave 
+differently in various
+2618                                                                           ;       mono/stereo input/output configurations if yo
+u wish.
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 53
+
+
+
+2619                                                                           ;
+2620                                                                           ;       Port B allows the DSP digital control over th
+e following analog
+2621                                                                           ;       sections of the Dock board: DSP path Pre-Emph
+asis filtering,
+2622                                                                           ;       DSP path De-Emphais filtering, DSP Patch Enab
+le, and Dry Path enable.
+2623                                                                           ;       In this example code, I leave the filtering o
+ff and use the
+2624                                                                           ;       dry path for analog bypass.
+2625                                                                           ;
+2626                                                                           ;               r5 and n5 are reserved by the Host In
+terrupt process
+2627                                                                           ;
+2628                                                                           ;
+2629   
+2630   
+2631                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2632                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2633                       ; Common Subroutines
+2634                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2635                       ;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2636   
+2637   
+2638   
+2639                       tremolo:
+2640      P:0000F7 21C400            move              a,x0                    ;copy sample to x0
+2641      P:0000F8 200013            clr     a
+2642      P:0000F9 458000            move              x:Knob_1,x1
+2643      P:0000FA 2000A2            mac     x0,x1,a
+2644                       ;       move    b,a
+2645      P:0000FB 00000C            rts
+2646   
+2647                       ;                                                                               create wave table for LFO
+2648                       ;       move    x:Knob_1,x0                                     ;take knob one value, depth factor
+2649                       ;       move    x:Knob_2,x0                                     ;second knob as variable LFO frequency
+2650                       ;       mpy     x0,b                                            ;Multiply depth factor by sample copy
+2651   
+2652                       ;Knob_Coefficient
+2653                                                                           ;Convert Knob 1 to Frequency
+2654                       ;        move    x:Knob_1,x0                             ; load Knob 1's current value (range = 0 to 1)
+2655                       ;        move    #>$199999,a                             ;  a =   1 Hz
+2656                       ;        move    #>$7FFFFF,y0                            ; y0 = 10 Hz
+2657                       ;        mac     x0,y0,a                                 ; a  =  10 * value + 1; register a now ranges be
+tween 50 and 5000 Hz
+2658                       ;        move    x0,x:Filter_1_K                          ; store current value
+2659                       ;               move    x0,x:Debug_Read_from_DSP_1                              ; DEBUG Example, send fil
+ter 1 frequency coefficient to GUI
+2660   
+2661                       ;Knob_Coefficient
+2662                                                                           ;Convert Knob 1 to Frequency
+2663                       ;        move    x:Knob_1,x1                             ; load Knob 1's current value (range = 0 to 1)
+2664                       ;        move    #>$199999,a                             ;  a =   1 Hz
+2665                       ;        move    #>$7FFFFF,y0                            ; y0 = 10 Hz
+2666                       ;        mac     x0,y0,a                                 ; a  =  10 * value + 1; register a now ranges be
+tween 50 and 5000 Hz
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 54
+
+
+
+2667                       ;        move    x0,x1                                           ; store current value
+2668                       ;               move    x0,x:Debug_Read_from_DSP_1                              ; DEBUG Example, send fil
+ter 1 frequency coefficient to GUI
+2669   
+2670                       ;Knob_Coefficient
+2671                       ;       ;Convert Knob 2 to Frequency
+2672                       ;        move    x:Knob_2,x0                             ; load Knob 1's current value (range = 0 to 1)
+2673                       ;        move    #>$199999,a                             ;  a =   1 Hz
+2674                       ;        move    #>$7FFFFF,y0                            ; y0 = 10 Hz
+2675                       ;        mac     x0,y0,a                                 ; a  =  10 * value + 1; register a now ranges be
+tween 50 and 5000 Hz
+2676                       ;        move    a,x:Filter_1_K                          ; store current frequency value
+2677                       ;               move    a,x:Debug_Read_from_DSP_1                               ; DEBUG Example, send fil
+ter 1 frequency coefficient to GUI
+2678   
+2679   
+2680   
+2681                       ;-----------------------------------------------------------------------
+2682                       ;   TwoBand_EQ
+2683                       ;       This sub routine processes two state variable filters a
+2684                       ;       with selectable filter type and shelving gain (-14dB to +14dB)
+2685                       ;
+2686                       ;       INPUT:      a  = audio input to be filtered
+2687                       ;                   r6 = pointer to switch state memory
+2688                       ;                   r4 = pointer to filter coefficients
+2689                       ;                   r3 = pointer to filter memory
+2690                       ;
+2691                       ;       OUTPUT:     a  = filtered output
+2692                       ;
+2693                       ;
+2694                       TwoBand_EQ:
+2695      P:0000FC 0D1080            bsr     SV_Filter                         ; process the state variable filter
+                   000023
+2696                                                                           ;select filter type
+2697      P:0000FE 56DE00            move              x:(r6)+,a
+**** 2698 [tremolo.asm 500]: WARNING --- Pipeline stall reading register written in previous instruction
+2698      P:0000FF 0ACE21            jset    #1,a,Highpass_1_L                 ; x0 = hp_output
+                   000105
+2699      P:000101 0ACE20            jset    #0,a,Bandpass_1_L                 ; b  = bp_output
+                   000109
+2700      P:000103 0AF080            jmp     EndSwitch_1_L                     ; y0 = lp_output
+                   00010A
+2701                       Highpass_1_L:
+2702      P:000105 208F00            move              x0,b
+**** 2703 [tremolo.asm 505]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2703      P:000106 21E600            move              b,y0
+2704      P:000107 0AF080            jmp     EndSwitch_1_L
+                   00010A
+2705                       Bandpass_1_L:
+2706      P:000109 21E600            move              b,y0
+2707                       EndSwitch_1_L:
+2708      P:00010A 2000E0            mpy     x1,y0,a                           ; process shelving scalar
+2709      P:00010B 0C1D04            asl     #2,a,a                            ; add gain to extend shelving range -14dB to +14dB
+2710      P:00010C 200070            add     y1,a                              ; add filter input to create shelf
+2711   
+2712      P:00010D 0D1080            bsr     SV_Filter                         ; process the state variable filter
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 55
+
+
+
+                   000012
+2713                                                                           ;select filter type
+2714      P:00010F 56D600            move              x:(r6)-,a
+**** 2715 [tremolo.asm 517]: WARNING --- Pipeline stall reading register written in previous instruction
+2715      P:000110 0ACE21            jset    #1,a,Highpass_2_L                 ; x0 = hp_output
+                   000116
+2716      P:000112 0ACE20            jset    #0,a,Bandpass_2_L                 ; b  = bp_output
+                   00011A
+2717      P:000114 0AF080            jmp     EndSwitch_2_L                     ; y0 = lp_output
+                   00011B
+2718                       Highpass_2_L:
+2719      P:000116 208F00            move              x0,b
+**** 2720 [tremolo.asm 522]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2720      P:000117 21E600            move              b,y0
+2721      P:000118 0AF080            jmp     EndSwitch_2_L
+                   00011B
+2722                       Bandpass_2_L:
+2723      P:00011A 21E600            move              b,y0
+2724                       EndSwitch_2_L:
+2725      P:00011B 2000E0            mpy     x1,y0,a                           ; process shelving scalar
+2726      P:00011C 0C1D04            asl     #2,a,a                            ; add gain to extend shelving range -14dB to +14dB
+2727      P:00011D 200070            add     y1,a                              ; add filter input to create shelf
+2728      P:00011E 00000C            rts
+2729   
+2730   
+2731                       ;-----------------------------------------------------------------------
+2732                       ;   SV_Filter
+2733                       ;       This sub routine is a state variable band-pass
+2734                       ;       This filter outputs low-pass, band-pass, and high-pass filter types
+2735                       ;
+2736                       ;       INPUT:      a  = audio input to be filtered
+2737                       ;             x:(r4)+0 = frequency coefficient,  K = 2*pi*fc/Fs
+2738                       ;             x:(r4)+1 = bandwidth coefficient,  1/(2Q) where Q is bandwidth
+2739                       ;             x:(r4)+2 = shelving  coefficient
+2740                       ;
+2741                       ;       OUTPUTS:    y0 = lp_output
+2742                       ;                   b  = bp_output
+2743                       ;                   x0 = hp_output
+2744                       ;                   a  = hp_output
+2745                       ;                   x1 = next coeff
+2746                       ;                   y1 = input
+2747                       ;
+2748                       SV_Filter:
+2749      P:00011F 5FDB00            move                          y:(r3)+,b   ; b  = a(n-1)
+2750      P:000120 E4FC00            move              x:(r4)+,x1  y:(r3)-,y0  ; x1 = K                        y0  = y(n-1)
+2751      P:000121 44DCEA            mac     x1,y0,b   x:(r4)+,x0              ; b  = K * y(n-1) + a(n-1)      x0  = 1/2Q
+2752      P:000122 21C7D4            mpy     -y0,x0,a  a,y1                    ; a  = -y(n-1)/2Q               y1  = x(n)
+2753      P:000123 5F63C2            mac     y1,x0,a               b,y:(r3)    ; a  = (x(n)-y(n-1))/2Q         store a(n)
+2754      P:000124 200032            asl     a                                 ; a  = (x(n)-y(n-1))/Q
+2755      P:000125 20CF14            sub     b,a       y0,b                    ; a  = (x(n)-y(n-1))/Q - a(n)   b  = y(n-1)
+**** 2756 [tremolo.asm 558]: WARNING --- Pipeline stall reading register A written in previous instruction (X data move field)
+**** 2756 [tremolo.asm 558]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2756      P:000126 21C400            move              a,x0                    ; x0 = HP output
+2757      P:000127 F4FCAA            mac     x1,x0,b   x:(r4)+,x1  y:(r3)+,y0  ; b  = k(HP) + y(n-1)           x1 = next coeff y0 = 
+LP output
+**** 2758 [tremolo.asm 560]: WARNING --- Pipeline stall reading register B written in previous instruction (X data move field)
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 56
+
+
+
+**** 2758 [tremolo.asm 560]: WARNING --- Pipeline stall reading register written in previous instruction (Y data move field)
+2758      P:000128 5F5B00            move                          b,y:(r3)+   ; store next y(n-1)
+2759      P:000129 00000C            rts
+2760   
+2761   
+2762                       ;-----------------------------------------------------------------------
+2763                       ;   Generate_Coeffs
+2764                       ;       This sub routine takes the knob values that range from a 24 bit
+2765                       ;       two's compliment 0 to 1 (0x000000 to 0x7FFFFF) and converts them
+2766                       ;       for use as coefficients.
+2767                       ;
+2768                       ;       This is example code is setup so that Fs = 39062.5
+2769                       ;
+2770                       Generate_Coeffs:
+2771                                                                           ;Convert Knob 1 to Filter 1's Frequency
+2772      P:00012A 448000            move              x:Knob_1,x0             ; load Knob 1's current value (range = 0 to 1)
+2773      P:00012B 56F400            move              #>$010789,a             ;  a =   50 Hz
+                   010789
+2774      P:00012D 46F400            move              #>$65EA0D,y0            ; y0 = 4950 Hz
+                   65EA0D
+2775                                                                           ; for frequency = 4950 Hz, the coefficient value will
+ be 2*pi*4950/Fs = 0.796205242
+2776                                                                           ; that number is then multiplied by (2^23)-1 for 24 b
+it two's compliment = 6679053 decimal = 65EA0D hex
+2777      P:00012F 2000D2            mac     x0,y0,a                           ; a  =  4950 * value + 50; register a now ranges betw
+een 50 and 5000 Hz
+**** 2778 [tremolo.asm 580]: WARNING --- Pipeline stall reading register A written in previous instruction (X data move field)
+**** 2778 [tremolo.asm 580]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2778      P:000130 561A00            move              a,x:Filter_1_K          ; store current frequency value
+2779      P:000131 561600            move              a,x:Debug_Read_from_DSP_1 ; DEBUG Example, send filter 1 frequency coefficien
+t to GUI
+2780   
+2781                                                                           ;Convert Knob 4 to Filter 2's Frequency
+2782      P:000132 448300            move              x:Knob_4,x0             ; load Knob 4's value
+2783      P:000133 56F400            move              #>$010789,a             ; a  =   50 Hz
+                   010789
+2784      P:000135 2000D2            mac     x0,y0,a                           ; a  =  4950 * value + 50
+**** 2785 [tremolo.asm 587]: WARNING --- Pipeline stall reading register A written in previous instruction (X data move field)
+**** 2785 [tremolo.asm 587]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2785      P:000136 561D00            move              a,x:Filter_2_K          ; store current frequency value
+2786      P:000137 561700            move              a,x:Debug_Read_from_DSP_2 ; DEBUG Example, send filter 2 frequency coefficien
+t to GUI
+2787   
+2788                                                                           ;Convert Knob 2 to Filter 1's Q
+2789      P:000138 448100            move              x:Knob_2,x0             ; load Knob 2's value
+2790      P:000139 46F400            move              #>$866667,y0            ; y0 = 1/2Q
+                   866667
+2791      P:00013B 56F400            move              #>$7FFFFF,a             ; a  = 1/2Q, where Q = .5
+                   7FFFFF
+2792      P:00013D 2000D2            mac     x0,y0,a                           ; a  = 1/2Q, where Q ranges between .5 and 10
+**** 2793 [tremolo.asm 595]: WARNING --- Pipeline stall reading register A written in previous instruction (X data move field)
+**** 2793 [tremolo.asm 595]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2793      P:00013E 561B00            move              a,x:Filter_1_Q          ; store current 1/2Q value
+2794      P:00013F 561800            move              a,x:Debug_Read_from_DSP_3 ; DEBUG Example, send filter 1 bandwidth to GUI
+2795   
+2796                                                                           ;Convert Knob 5 to Filter 2's Q
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 57
+
+
+
+2797      P:000140 448400            move              x:Knob_5,x0             ; load Knob 5's value
+2798      P:000141 56F400            move              #>$7FFFFF,a             ; a  = 1/2Q, where Q = .5
+                   7FFFFF
+2799      P:000143 2000D2            mac     x0,y0,a                           ; a  = 1/2Q, where Q ranges between .5 and 10
+**** 2800 [tremolo.asm 602]: WARNING --- Pipeline stall reading register A written in previous instruction (X data move field)
+**** 2800 [tremolo.asm 602]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2800      P:000144 561E00            move              a,x:Filter_2_Q          ; store current 1/2Q value
+2801      P:000145 561900            move              a,x:Debug_Read_from_DSP_4 ; DEBUG Example, send filter 2 bandwidth to GUI
+2802   
+2803                                                                           ;Convert Knob 3 to Filter 1's Shelving
+2804      P:000146 568200            move              x:Knob_3,a              ; load Knob 3's value (range = 0 to 1)
+2805      P:000147 44F400            move              #>$400000,x0            ; x0 = .5
+                   400000
+2806      P:000149 200044            sub     x0,a                              ; (range = -.5 to .5)
+2807      P:00014A 014085            cmp     #0,a                              ; compare range to zero
+2808      P:00014B 0AF0A9            jlt     CuttingShelve1                    ; jump if less than zero
+                   000150
+2809      P:00014D 200032            asl     a                                 ; (range = 0  to 1)
+2810      P:00014E 0AF080            jmp     DoneShelve1                       ; jump to dove shelve 1
+                   000153
+2811                       CuttingShelve1                                      ; generate negative shelve range
+2812      P:000150 10B400            move              #>$333333,x0 a,y0       ; x0 = .4
+                   333333
+2813      P:000152 2000D0            mpy     x0,y0,a                           ; (range = -.2 to 0)
+2814                       DoneShelve1                                         ; mark end of shelve coeff curve generation
+2815                                                                           ; coefficient range = -.2 to 1 for a finale shelve ra
+nge of -14dB to +14dB
+**** 2816 [tremolo.asm 618]: WARNING --- Pipeline stall reading register A written in previous instruction (X data move field)
+**** 2816 [tremolo.asm 618]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2816      P:000153 561C00            move              a,x:Filter_1_Shelve     ; store current shelving (range -.25 to 1)
+2817   
+2818                                                                           ;Convert Knob 6 to Filter 2's Shelving
+2819      P:000154 568500            move              x:Knob_6,a              ; load Knob 6's value (range = 0 to 1)
+2820      P:000155 44F400            move              #>$400000,x0            ; x0 = .5
+                   400000
+2821      P:000157 200044            sub     x0,a                              ; (range = -.5 to .5)
+2822      P:000158 014085            cmp     #0,a                              ; compare range to zero
+2823      P:000159 0AF0A9            jlt     CuttingShelve2                    ; jump if less than zero
+                   00015E
+2824      P:00015B 200032            asl     a                                 ; (range = 0  to 1)
+2825      P:00015C 0AF080            jmp     DoneShelve2                       ; jump to dove shelve 1
+                   000161
+2826                       CuttingShelve2                                      ; generate negative shelve range
+2827      P:00015E 10B400            move              #>$333333,x0 a,y0       ; x0 = .4
+                   333333
+2828      P:000160 2000D0            mpy     x0,y0,a                           ; (range = -.2 to 0)
+2829                       DoneShelve2                                         ; mark end of shelve coeff curve generation
+2830                                                                           ; coefficient range = -.2 to 1 for a finale shelve ra
+nge of -14dB to +14dB
+**** 2831 [tremolo.asm 633]: WARNING --- Pipeline stall reading register A written in previous instruction (X data move field)
+**** 2831 [tremolo.asm 633]: WARNING --- Pipeline stall reading register written in previous instruction (X data move field)
+2831      P:000161 561F00            move              a,x:Filter_2_Shelve     ; store current shelving
+2832      P:000162 00000C            rts
+
+0    Errors
+23   Warnings
+Motorola DSP56300 Assembler  Version 6.3.4   15-04-02  21:11:56  tremolo.asm  Page 58
+
+
+
+
+
